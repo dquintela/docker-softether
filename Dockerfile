@@ -10,10 +10,15 @@ ARG BUILD_DIR=/tmp/SoftEtherVPN
 ARG SOFTETHER_CPU=32bit
 ARG DEBIAN_FRONTEND=noninteractive
 
+COPY script /docker-softether/
+
+# ethtool,iptables are used by vpnserver 
+# https://github.com/SoftEtherVPN/SoftEtherVPN/search?utf8=%E2%9C%93&q=UnixExec&type=Code
+# https://github.com/SoftEtherVPN/SoftEtherVPN/search?utf8=%E2%9C%93&q=UnixExecSilent&type=Code
 RUN set -xe \
 && apt-get update \
-&& apt-get install -q -y libreadline6 libssl1.0.0 libncurses5 \
-&& apt-get install -q -y git make gcc libreadline6-dev libssl-dev libncurses5-dev \
+&& apt-get install -q -y libreadline6 libssl1.0.0 libncurses5 ethtool iptables \
+&& apt-get install -q -y build-essential git libreadline6-dev libssl-dev libncurses5-dev \
 && git clone --depth=1 https://github.com/SoftEtherVPN/SoftEtherVPN.git ${BUILD_DIR} \
 && cd ${BUILD_DIR} \
 && cp src/makefiles/linux_${SOFTETHER_CPU}.mak Makefile \
@@ -24,10 +29,17 @@ INSTALL_VPNSERVER_DIR=${SOFTETHER_INSTALL}/vpnserver/ \
 INSTALL_VPNBRIDGE_DIR=${SOFTETHER_INSTALL}/vpnbridge/ \
 INSTALL_VPNCLIENT_DIR=${SOFTETHER_INSTALL}/vpnclient/ \
 INSTALL_VPNCMD_DIR=${SOFTETHER_INSTALL}/vpncmd/ \
-&& apt-get remove -y --auto-remove --purge git make gcc libreadline6-dev libssl-dev libncurses5-dev \
+&& apt-get remove -y --auto-remove --purge build-essential git libreadline6-dev libssl-dev libncurses5-dev \
 && apt-get clean \
-&& apt-get autoclean \
 && rm -rf /var/lib/apt/lists/* \
-&& rm -rf ${BUILD_DIR}
+&& rm -rf ${BUILD_DIR} \
+&& chmod +x /docker-softether/*.sh
 
+# https://docs.docker.com/engine/reference/builder/#/healthcheck
+# HEALTHCHECK
+VOLUME /var/log/softether
+EXPOSE 443/tcp 992/tcp 1194/tcp 1194/udp 5555/tcp 500/udp 4500/udp
 WORKDIR ${SOFTETHER_INSTALL}
+ENTRYPOINT /docker-softether/run.sh
+CMD "--help"
+
