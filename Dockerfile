@@ -13,6 +13,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 COPY script /docker-softether/
 
 # ethtool,iptables are used by vpnserver 
+# Don't install iptables, need a privileged containers (let softether detect as not found) ??
+# Check if --cap-add NET_ADMIN is enough
 # https://github.com/SoftEtherVPN/SoftEtherVPN/search?utf8=%E2%9C%93&q=UnixExec&type=Code
 # https://github.com/SoftEtherVPN/SoftEtherVPN/search?utf8=%E2%9C%93&q=UnixExecSilent&type=Code
 # ca-certificates is because we are using --no-install-recommends

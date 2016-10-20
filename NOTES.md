@@ -1,10 +1,19 @@
 # Helper commands
 
-sudo docker run -it --rm dquintela/i386-softether
+sudo docker run -it --rm dquintela/softether-i386
 
-sudo docker build -t dquintela/i386-softether .
+sudo docker build -t dquintela/softether-i386 .
 
-sudo docker run -it --rm -v /sys/fs/cgroup:/sys/fs/cgroup:ro dquintela/i386-softether
+sudo docker run -it --rm dquintela/softether-i386
+
+sudo docker run -it --rm --cap-add NET_ADMIN --name softether-i386 dquintela/softether-i386 vpnserver
+
+sudo docker run -it --rm --cap-add NET_ADMIN -v /home/dquintela/vpnserver/vpn_server.config:/usr/local/softether/vpnserver/vpn_server.config --name softether-i386 dquintela/softether-i386 vpnserver
+
+sudo docker exec -ti softether-i386 bash
+    
+     # Install ip, ifconfig and ssh to test inside attached image
+     apt-get update && apt-get install iproute2 net-tools ssh-client
 
 # Random notes
 
