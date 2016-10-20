@@ -1,18 +1,21 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# set -x
 
 case "$1" in
 	vpnclient)
-		exec run-vpnclient.sh
+		exec ./run-vpnclient.sh
+        exit $?
 		;;
 	vpnbridge)
-		exec run-vpnbridge.sh
+		exec ./run-vpnbridge.sh
+        exit $?
 		;;
 	vpnserver)
-		exec run-vpnserver.sh
+		exec ./run-vpnserver.sh
+        exit $?
 		;;
-	--help)
 	*)
-		echo "Usage: run.sh {vpnclient|vpnbridge|vpnserver}"
+		echo "Usage: $0 {vpnclient|vpnbridge|vpnserver}"
 		exit 1
 		;;
 esac

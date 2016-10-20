@@ -1,17 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -e
 
-_term() { 
-  echo "Caught SIGTERM signal! Stopping $SOFTETHER_BIN/vpnclient" 
-  $SOFTETHER_BIN/vpnclient stop
-}
+DAEMON=$SOFTETHER_BIN/vpnclient
 
-trap _term SIGTERM
-
-echo "Starting $SOFTETHER_BIN/vpnclient...";
-$SOFTETHER_BIN/vpnclient start
-
-echo "Waiting for $SOFTETHER_BIN/vpnclient to end...";
-# Find PIDs of vpnclient
-while [[ $(ps -e | awk '$4=="vpnclient"') ]]; do sleep 1; done
+# Start daemon
+exec ./run-daemon.sh $DAEMON || exit $?
 
 

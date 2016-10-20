@@ -15,10 +15,11 @@ COPY script /docker-softether/
 # ethtool,iptables are used by vpnserver 
 # https://github.com/SoftEtherVPN/SoftEtherVPN/search?utf8=%E2%9C%93&q=UnixExec&type=Code
 # https://github.com/SoftEtherVPN/SoftEtherVPN/search?utf8=%E2%9C%93&q=UnixExecSilent&type=Code
+# ca-certificates is because we are using --no-install-recommends
 RUN set -xe \
 && apt-get update \
-&& apt-get install -q -y libreadline6 libssl1.0.0 libncurses5 ethtool iptables \
-&& apt-get install -q -y build-essential git libreadline6-dev libssl-dev libncurses5-dev \
+&& apt-get install -q -y --no-install-recommends ca-certificates libreadline6 libssl1.0.0 libncurses5 ethtool iptables \
+&& apt-get install -q -y --no-install-recommends build-essential git libreadline6-dev libssl-dev libncurses5-dev \
 && git clone --depth=1 https://github.com/SoftEtherVPN/SoftEtherVPN.git ${BUILD_DIR} \
 && cd ${BUILD_DIR} \
 && cp src/makefiles/linux_${SOFTETHER_CPU}.mak Makefile \
