@@ -40,7 +40,10 @@ INSTALL_VPNCMD_DIR=${SOFTETHER_INSTALL}/vpncmd/ \
 # HEALTHCHECK
 VOLUME /var/log/softether
 EXPOSE 443/tcp 992/tcp 1194/tcp 1194/udp 5555/tcp 500/udp 4500/udp
-WORKDIR ${SOFTETHER_INSTALL}
-ENTRYPOINT /docker-softether/run.sh
-CMD "--help"
+# WORKDIR ${SOFTETHER_INSTALL}
+WORKDIR /docker-softether
+ENTRYPOINT ["/docker-softether/run.sh"]
+CMD ["--help"]
+# ENTRYPOINT exec /docker-softether/run.sh
+# CMD ["--help"]
 
