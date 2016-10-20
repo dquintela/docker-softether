@@ -19,11 +19,11 @@ SOFTETHER_LOG=$SOFTETHER_INSTALL/vpnserver
 
 # Handle default configuration ?!?!
 
-if [ ! -f $SOFTETHER_INSTALL/vpnserver/vpn_server.config ] then
+if [ ! -f "$SOFTETHER_INSTALL/vpnserver/vpn_server.config" ] ; then
     echo "I DONT HAVE A $SOFTETHER_INSTALL/vpnserver/vpn_server.config file"
     echo "GENERATE DEFAULTS"
 
-    exit 1
+    # exit 1
 fi
 
 # Start daemon
