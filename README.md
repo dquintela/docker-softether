@@ -2,6 +2,8 @@
 
 ## Run
 
+WORK IN PROGRESS - DON'T USE
+
 Simplest version:
 
     docker run -d --net host --cap-add NET_ADMIN --name vpnserver dquintela/i386-softether vpnserver
