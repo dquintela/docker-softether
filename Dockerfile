@@ -41,11 +41,17 @@ INSTALL_VPNCMD_DIR=${SOFTETHER_INSTALL}/vpncmd/ \
 # https://docs.docker.com/engine/reference/builder/#/healthcheck
 # HEALTHCHECK
 VOLUME /var/log/softether
+
+# 443 for OpenVPN over TLS
+# 500 4500 for L2TP/IPSec
+# 1701 for L2TP tunnel
+# 4500 for NAT traversal
+# 5555 for SoftEtherVPN
 EXPOSE 443/tcp 992/tcp 1194/tcp 1194/udp 5555/tcp 500/udp 4500/udp
+
 # WORKDIR ${SOFTETHER_INSTALL}
 WORKDIR /docker-softether
+
 ENTRYPOINT ["/docker-softether/run.sh"]
 CMD ["--help"]
-# ENTRYPOINT exec /docker-softether/run.sh
-# CMD ["--help"]
 

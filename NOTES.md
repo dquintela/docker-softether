@@ -1,3 +1,14 @@
+# Todo
+
+	makefile
+		https://stackoverflow.com/questions/26118303/docker-with-make-build-image-on-dockerfile-change
+		https://github.com/thockin/go-build-template
+	getopts
+	imagem gerada com docker build-arg com git describe
+		https://github.com/thockin/go-build-template/blob/master/Makefile
+	subimagem -> vpnserver
+	cross-build -> qemu (amd64 + armel?)
+
 # Helper commands
 
 sudo docker run -it --rm dquintela/softether-i386
