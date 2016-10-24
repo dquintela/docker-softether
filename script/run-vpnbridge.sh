@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -e
+. ./version.sh
 
 DAEMON=$SOFTETHER_BIN/vpnbridge
 

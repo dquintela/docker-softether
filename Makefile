@@ -5,13 +5,18 @@ VERSION := $(shell git describe --tag --always --dirty)
 ALL_ARCH := i386 amd64
 #ALL_ARCH := i386 amd64 armel rpi armhf
 
-.PHONY: all-container all-push
+.PHONY: all-container all-push docker-login clean clean-container
 .DEFAULT: all-container
 
-all-container: $(addprefix container-, $(ALL_ARCH))
+clean: clean-container
+
+all-container: $(addprefix .Dockerfile-, $(ALL_ARCH)) $(addprefix container-, $(ALL_ARCH))
 
 all-push: $(addprefix push-, $(ALL_ARCH))
 
+clean-container:
+	rm -f $(addprefix container-, $(ALL_ARCH)) $(addprefix .Dockerfile-, $(ALL_ARCH))
+	
 BASEIMAGE_i386  := i386/ubuntu:16.04
 BASEIMAGE_amd64 := ubuntu:16.04
 BASEIMAGE_armel := armel/ubuntu:16.04
@@ -23,18 +28,28 @@ CPU_BITS_armel  := 32bit
 CPU_BITS_rpi    := 32bit
 CPU_BITS_armhf  := 32bit
 
+docker-login:
+	@sudo docker login -u=$(DOCKER_USERNAME) -p=$(DOCKER_PASSWORD)
+
 IMAGE            = dquintela/softether-$(*)
 CPU_BITS		 = $(CPU_BITS_$(*))
+BASEIMAGE 		 = $(BASEIMAGE_$(*))
+
+push-%: container-% docker-login
+	sudo docker push $(IMAGE):$(VERSION)
+	echo "pushed: $(IMAGE):$(VERSION)"
+	sudo docker push $(IMAGE):latest
+	echo "pushed: $(IMAGE):latest"
+
 container-%: .Dockerfile-%
 	sudo docker build \
 		--build-arg SOFTETHER_CPU=$(CPU_BITS) \
-		--build-arg BUILD_VERSION=$(VERSION) \
+		--build-arg SOFTETHER_IMAGE_VERSION=$(VERSION) \
 		-t $(IMAGE):latest \
 		-t $(IMAGE):$(VERSION) \
 		-f $< .
 	sudo docker images -q $(IMAGE):$(VERSION) > $@
 
-BASEIMAGE 		 = $(BASEIMAGE_$(*))
 .Dockerfile-%: Dockerfile.in
 	sed \
 	    -e 's/ARG_BASEIMAGE/$(subst ',\',$(subst /,\/,$(subst &,\&,$(subst \,\\,$(BASEIMAGE)))))/g' \

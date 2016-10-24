@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -e
+. ./version.sh
 
 warn() { "$@" || echo "WARNING: Error executing $*"; }
 
