@@ -76,3 +76,31 @@ sudo docker attach silly_rosalind
 
 sudo docker exec -ti silly_rosalind bash
 
+# Cross-Arch docker build
+
+https://resin.io/blog/building-arm-containers-on-any-x86-machine-even-dockerhub/
+http://blog.ubergarm.com/run-arm-docker-images-on-x86_64-hosts/
+http://blog.ubergarm.com/travisci-docker-armhf-images/
+
+Prepare devel machine (since it's a i386, I also need qemu-x86_64-static):
+sudo apt-get update
+sudo apt-get install -y --no-install-recommends qemu-user-static binfmt-support
+update-binfmts --display qemu-arm
+update-binfmts --display qemu-x86_64
+
+root@fire:~# qemu-
+qemu-aarch64-static       qemu-mips64el-static      qemu-ppc-static
+qemu-alpha-static         qemu-mips64-static        qemu-s390x-static
+qemu-armeb-static         qemu-mipsel-static        qemu-sh4eb-static
+qemu-arm-static           qemu-mipsn32el-static     qemu-sh4-static
+qemu-cris-static          qemu-mipsn32-static       qemu-sparc32plus-static
+qemu-debootstrap          qemu-mips-static          qemu-sparc64-static
+qemu-i386-static          qemu-or32-static          qemu-sparc-static
+qemu-m68k-static          qemu-ppc64abi32-static    qemu-tilegx-static
+qemu-microblazeel-static  qemu-ppc64le-static       qemu-unicore32-static
+qemu-microblaze-static    qemu-ppc64-static         qemu-x86_64-static
+
+root@fire:~# which qemu-arm-static qemu-x86_64-static
+/usr/bin/qemu-arm-static
+/usr/bin/qemu-x86_64-static
+
