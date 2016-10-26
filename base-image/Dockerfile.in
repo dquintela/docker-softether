@@ -16,7 +16,7 @@ ENV SOFTETHER_BIN="/usr/local/bin" \
 	SOFTETHER_INSTALL="/usr/local/softether" \
 	SOFTETHER_IMAGE_VERSION="${SOFTETHER_IMAGE_VERSION:-v0.0.0}"
 
-COPY assets /
+COPY host-qemu /
 COPY script /docker-softether/
 
 # ethtool,iptables are used by vpnserver 
