@@ -82,9 +82,14 @@ https://resin.io/blog/building-arm-containers-on-any-x86-machine-even-dockerhub/
 http://blog.ubergarm.com/run-arm-docker-images-on-x86_64-hosts/
 http://blog.ubergarm.com/travisci-docker-armhf-images/
 
+See also https://github.com/multiarch/ubuntu-core
+https://github.com/multiarch/qemu-user-static
+
 Prepare devel machine (since it's a i386, I also need qemu-x86_64-static):
 sudo apt-get update
 sudo apt-get install -y --no-install-recommends qemu-user-static binfmt-support
+update-binfmts --enable qemu-arm
+update-binfmts --enable qemu-x86_64
 update-binfmts --display qemu-arm
 update-binfmts --display qemu-x86_64
 
@@ -104,3 +109,52 @@ root@fire:~# which qemu-arm-static qemu-x86_64-static
 /usr/bin/qemu-arm-static
 /usr/bin/qemu-x86_64-static
 
+https://forums.gentoo.org/viewtopic-p-7657602.html?sid=cacff4eef9be6a37c9c12934a83d760e#7657602
+https://github.com/multiarch/qemu-user-static/blob/master/register/register.sh
+http://seeblog.seenet.ca/2016/03/running-amd64-binaries-on-an-i386-linux-system/
+
+sudo update-binfmts \
+    --package qemu-user-static \
+    --install qemu-x86_64 /usr/bin/qemu-x86_64-static \
+    --magic '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00' \
+    --mask '\xff\xff\xff\xff\xff\xfe\xfe\xfc\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff' \
+    --offset 0 \
+    --credential yes
+
+WORKS BUTS IT SEEMS TO IT
+	https://bugs.launchpad.net/qemu/+bug/1591611 (Fixed ? on >= 2.6.94) [i386 DEVEL IS 2.5.0]
+	
+ ---> Running in f5e3fa5bddd0
+warning: TCG doesn't support requested feature: CPUID.01H:ECX.vmx [bit 5]
++ apt-get update
+warning: TCG doesn't support requested feature: CPUID.01H:ECX.vmx [bit 5]
+warning: TCG doesn't support requested feature: CPUID.01H:ECX.vmx [bit 5]
+E: Method /usr/lib/apt/methods/http did not start correctly
+E: Method /usr/lib/apt/methods/http did not start correctly
+E: Select has failed - select (14: Bad address)
+E: dpkg was interrupted, you must manually run 'dpkg --configure -a' to correct the problem.
+setup_frame: not implemented
+The command '/bin/sh -c set -xe && apt-get update && apt-get install -q -y --no-.....
+
+	
+	--------------
+echo ':x86_64:M::\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00:\xff\xff\xff\xff\xff\xfe\xfe\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff:/usr/bin/qemu-x86_64-static:P' > /proc/sys/fs/binfmt_misc/register 
+
+WORKS
+dquintela@fire:~/docker-softether$ uname -a
+Linux fire 4.4.0-45-generic #66-Ubuntu SMP Wed Oct 19 14:12:05 UTC 2016 i686 i686 i686 GNU/Linux
+dquintela@fire:~/docker-softether$ ./busybox-x86_64 uname -a
+warning: TCG doesn't support requested feature: CPUID.01H:ECX.vmx [bit 5]
+Linux fire 4.4.0-45-generic #66-Ubuntu SMP Wed Oct 19 14:12:05 UTC 2016 x86_64 GNU/Linux
+
+BUT on docker build (review later)
+Step 10 : RUN apt-get update
+---> Running in 9b2166f2bd21
+warning: TCG doesn't support requested feature: CPUID.01H:ECX.vmx [bit 5]
+/bin/sh: 3: /bin/sh: Syntax error: end of file unexpected (expecting ")")
+The command '/bin/sh -c apt-get update' returned a non-zero code: 2
+Makefile:45: recipe for target 'container-amd64' failed
+make: *** [container-amd64] Error 2
+
+
+BUT!

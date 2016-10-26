@@ -1,14 +1,20 @@
+#
+# Softether VPN Server / Client / Bridge Built from sources
+#
 FROM i386/ubuntu:16.04
 MAINTAINER Diogo Quintela <dquintela@gmail.com>
 
-# Persist on final image
-ENV SOFTETHER_BIN /usr/local/bin
-ENV SOFTETHER_INSTALL /usr/local/softether
-
 # ENV like, but does not persist on final image
+# Can be replaced by --build-arg on docker-build
 ARG BUILD_DIR=/tmp/SoftEtherVPN
+ARG SOFTETHER_IMAGE_VERSION
 ARG SOFTETHER_CPU=32bit
 ARG DEBIAN_FRONTEND=noninteractive
+
+# Persist on final image
+ENV SOFTETHER_BIN="/usr/local/bin" \
+	SOFTETHER_INSTALL="/usr/local/softether" \
+	SOFTETHER_IMAGE_VERSION="${SOFTETHER_IMAGE_VERSION:-v0.0.0}"
 
 COPY script /docker-softether/
 
@@ -38,6 +44,8 @@ INSTALL_VPNCMD_DIR=${SOFTETHER_INSTALL}/vpncmd/ \
 && rm -rf ${BUILD_DIR} \
 && chmod +x /docker-softether/*.sh
 
+# https://docs.docker.com/engine/reference/builder/#label#stopsignal
+# STOPSIGNAL signal
 # https://docs.docker.com/engine/reference/builder/#/healthcheck
 # HEALTHCHECK
 VOLUME /var/log/softether
@@ -54,4 +62,3 @@ WORKDIR /docker-softether
 
 ENTRYPOINT ["/docker-softether/run.sh"]
 CMD ["--help"]
-

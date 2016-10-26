@@ -16,6 +16,7 @@ ENV SOFTETHER_BIN="/usr/local/bin" \
 	SOFTETHER_INSTALL="/usr/local/softether" \
 	SOFTETHER_IMAGE_VERSION="${SOFTETHER_IMAGE_VERSION:-v0.0.0}"
 
+COPY assets /
 COPY script /docker-softether/
 
 # ethtool,iptables are used by vpnserver 
@@ -42,7 +43,8 @@ INSTALL_VPNCMD_DIR=${SOFTETHER_INSTALL}/vpncmd/ \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/* \
 && rm -rf ${BUILD_DIR} \
-&& chmod +x /docker-softether/*.sh
+&& chmod +x /docker-softether/*.sh \
+&& rm /usr/bin/qemu-*-static # MUST LAST LINE 
 
 # https://docs.docker.com/engine/reference/builder/#label#stopsignal
 # STOPSIGNAL signal
@@ -62,4 +64,3 @@ WORKDIR /docker-softether
 
 ENTRYPOINT ["/docker-softether/run.sh"]
 CMD ["--help"]
-
