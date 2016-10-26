@@ -1,9 +1,7 @@
 # This version-strategy uses git tags to set the version string
 VERSION          := $(shell git describe --tag --always --dirty)
 BUILD            := build
-# Which architecture to build - see $(ALL_ARCH) for options.
-ALL_ARCH         := i386 amd64 armel
-#ALL_ARCH        := i386 amd64 armel rpi armhf
+ALL_ARCH         := amd64 i386 armel rpi armhf
 BASE_IMAGE_FILES := $(shell find base-image -type f -not -name 'Dockerfile*')
 QEMU_STATIC      := /usr/bin/qemu-arm-static /usr/bin/qemu-x86_64-static
 
@@ -14,24 +12,25 @@ QEMU_STATIC      := /usr/bin/qemu-arm-static /usr/bin/qemu-x86_64-static
 .PHONY:    all all-container all-push clean clean-container clean-assets docker-login \
 	       $(addprefix push-, $(ALL_ARCH)) 
 
-all: container-armel
+all: all-container
 
-all-container: $(addprefix $(BUILD)/Dockerfile-, $(ALL_ARCH)) $(addprefix container-, $(ALL_ARCH))
+all-container: $(addprefix container-, $(ALL_ARCH))
 
 all-push: all-container $(addprefix push-, $(ALL_ARCH))
 
 clean: clean-container
+	rmdir $(BUILD)
 
 clean-container: 
-	rm -f $(addprefix $(BUILD)/Dockerfile-, $(ALL_ARCH))
+	rm -Rf $(foreach arch,$(ALL_ARCH),$(BUILD)/$(arch))
 	
-BASEIMAGE_i386  := i386/ubuntu:16.04
-BASEIMAGE_amd64 := ubuntu:16.04
+BASEIMAGE_amd64 := debian:jessie
+BASEIMAGE_i386  := i386/debian:jessie
 BASEIMAGE_armel := armel/debian:jessie
-BASEIMAGE_rpi   := rpi/ubuntu:16.04
-BASEIMAGE_armhf := armhf/ubuntu:16.04
-CPU_BITS_i386   := 32bit
+BASEIMAGE_rpi   := resin/rpi-raspbian:jessie
+BASEIMAGE_armhf := armhf/debian:jessie
 CPU_BITS_amd64  := 64bit
+CPU_BITS_i386   := 32bit
 CPU_BITS_armel  := 32bit
 CPU_BITS_rpi    := 32bit
 CPU_BITS_armhf  := 32bit
@@ -62,6 +61,7 @@ $(BUILD)/%/base-image: $(BUILD)/%/base-image/Dockerfile \
 	   $(addprefix $(BUILD)/%/, $(BASE_IMAGE_FILES)) \
 	   $(addprefix $(BUILD)/%/base-image/host-qemu, $(QEMU_STATIC))
 	@echo "Image files aggregated at $@"
+	@echo "Prequisites are $?"
 
 $(BUILD)/%/base-image/Dockerfile: base-image/Dockerfile.in
 	@mkdir -p $(@D)
@@ -81,11 +81,11 @@ $(foreach arch,$(ALL_ARCH),$(BUILD)/$(arch)/base-image/host-qemu/usr/bin/%): /us
 #
 #assets: base-image/assets/usr/bin/qemu-arm-static base-image/assets/usr/bin/qemu-x86_64-static
 #assets: $(patsubst %,assets%,$(wildcard /usr/bin/qemu-*-static))
-#		
+#
 #
 #$(BUILD) base-image/assets/usr/bin:
 #	mkdir -p $@
-#	
+#
 #base-image/assets/usr/bin/qemu-%-static: /usr/bin/qemu-%-static base-image/assets/usr/bin 
 #	cp $< $@
 #
