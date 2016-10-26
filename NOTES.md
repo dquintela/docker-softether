@@ -78,6 +78,12 @@ sudo docker exec -ti silly_rosalind bash
 
 # Cross-Arch docker build
 
+https://wiki.debian.org/RaspberryPi 
+	Raspberry Pi 1 (A, B, A+, B+, Zero)
+	Debian armel will work (with a custom kernel), but will not make best use of the floating point hardware on the first version although it will work with the second version. Debian armhf will not work (see below) for the first version but does work with the second one. The Zero uses the same SoC/CPU as the first version, so they should function identically.
+
+	Generally, your best bet is to use Raspbian - which is (mostly) Debian armhf rebuilt by members of Debian for the RPi's ARMv6+VFP2 ARM variant. Raspbian releases usually follow the corresponding Debian release but do deviate in a handful of cases for various reasons.
+
 https://resin.io/blog/building-arm-containers-on-any-x86-machine-even-dockerhub/
 http://blog.ubergarm.com/run-arm-docker-images-on-x86_64-hosts/
 http://blog.ubergarm.com/travisci-docker-armhf-images/
