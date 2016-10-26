@@ -61,19 +61,37 @@ $(BUILD)/%/base-image: $(BUILD)/%/base-image/Dockerfile \
 	   $(addprefix $(BUILD)/%/, $(BASE_IMAGE_FILES)) \
 	   $(addprefix $(BUILD)/%/base-image/host-qemu, $(QEMU_STATIC))
 	@echo "Image files aggregated at $@"
-	@echo "Prequisites are $?"
 
 $(BUILD)/%/base-image/Dockerfile: base-image/Dockerfile.in
 	@mkdir -p $(@D)
 	sed -e 's/ARG_BASEIMAGE/$(subst ',\',$(subst /,\/,$(subst &,\&,$(subst \,\\,$(BASEIMAGE)))))/g' $< > $@
 
-$(foreach arch,$(ALL_ARCH),$(BUILD)/$(arch)/base-image/%): base-image/%
-	@mkdir -p $(@D)
-	cp $< $@
+# ==============================================================================
+# This block should generate the requirements as was in proceding targets by weren't working [See issue #1]
+define ARCH_TEMPLATE =
+$$(BUILD)/$(1)/base-image/%: base-image/%
+	@mkdir -p $$(@D)
+	cp $$< $$@
 
-$(foreach arch,$(ALL_ARCH),$(BUILD)/$(arch)/base-image/host-qemu/usr/bin/%): /usr/bin/%
-	@mkdir -p $(@D)
-	cp $< $@
+$$(BUILD)/$(1)/base-image/host-qemu/usr/bin/%: /usr/bin/%
+	@mkdir -p $$(@D)
+	cp $$< $$@
+
+endef
+# Generate targets from ARCH_TEMPLATE
+$(foreach arch,$(ALL_ARCH),$(eval $(call ARCH_TEMPLATE,$(arch))))
+# ==============================================================================
+# $(foreach arch,$(ALL_ARCH),$(BUILD)/$(arch)/base-image/%): base-image/%
+# 	@mkdir -p $(@D)
+# 	cp $< $@
+# 
+# $(foreach arch,$(ALL_ARCH),$(BUILD)/$(arch)/base-image/host-qemu/usr/bin/%): /usr/bin/%
+# 	@mkdir -p $(@D)
+# 	cp $< $@
+# ==============================================================================
+
+
+
 
 # $(BUILD)/Dockerfile-%: base-image/Dockerfile.in $(BUILD)
 #	sed -e 's/ARG_BASEIMAGE/$(subst ',\',$(subst /,\/,$(subst &,\&,$(subst \,\\,$(BASEIMAGE)))))/g' $< > $@
