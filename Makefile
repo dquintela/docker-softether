@@ -10,8 +10,7 @@ QEMU_STATIC      := /usr/bin/qemu-arm-static /usr/bin/qemu-x86_64-static
 		   $(foreach arch,$(ALL_ARCH),$(addprefix $(BUILD)/$(arch)/, $(BASE_IMAGE_FILES))) \
 		   $(foreach arch,$(ALL_ARCH),$(addprefix $(BUILD)/$(arch)/base-image/host-qemu, $(QEMU_STATIC))) 
 
-.PHONY:    all all-container all-push clean clean-container clean-assets docker-login \
-	       $(addprefix push-, $(ALL_ARCH)) 
+.PHONY:    all all-container all-push clean clean-container
 
 all: all-container
 
