@@ -5,7 +5,8 @@ ALL_ARCH         := amd64 i386 armel rpi armhf
 BASE_IMAGE_FILES := $(shell find base-image -type f -not -name 'Dockerfile*')
 QEMU_STATIC      := /usr/bin/qemu-arm-static /usr/bin/qemu-x86_64-static
 
-.PRECIOUS: $(foreach arch,$(ALL_ARCH),$(BUILD)/$(arch)/base-image/Dockerfile) \
+.PRECIOUS: $(foreach arch,$(ALL_ARCH),$(BUILD)/$(arch)/base-image) \
+		   $(foreach arch,$(ALL_ARCH),$(BUILD)/$(arch)/base-image/Dockerfile) \
 		   $(foreach arch,$(ALL_ARCH),$(addprefix $(BUILD)/$(arch)/, $(BASE_IMAGE_FILES))) \
 		   $(foreach arch,$(ALL_ARCH),$(addprefix $(BUILD)/$(arch)/base-image/host-qemu, $(QEMU_STATIC))) 
 
@@ -50,6 +51,7 @@ push-%: container-% docker-login
 
 container-%: $(BUILD)/%/base-image
 	docker build \
+		--pull \
 		--build-arg SOFTETHER_CPU=$(CPU_BITS) \
 		--build-arg SOFTETHER_IMAGE_VERSION=$(VERSION) \
 		-t $(IMAGE):latest \
@@ -58,8 +60,8 @@ container-%: $(BUILD)/%/base-image
 	docker images -q $(IMAGE):$(VERSION)
 
 $(BUILD)/%/base-image: $(BUILD)/%/base-image/Dockerfile \
-	   $(addprefix $(BUILD)/%/, $(BASE_IMAGE_FILES)) \
-	   $(addprefix $(BUILD)/%/base-image/host-qemu, $(QEMU_STATIC))
+					   $(addprefix $(BUILD)/%/, $(BASE_IMAGE_FILES)) \
+				       $(addprefix $(BUILD)/%/base-image/host-qemu, $(QEMU_STATIC))
 	@echo "Image files aggregated at $@"
 
 $(BUILD)/%/base-image/Dockerfile: base-image/Dockerfile.in
@@ -89,21 +91,3 @@ $(foreach arch,$(ALL_ARCH),$(eval $(call ARCH_TEMPLATE,$(arch))))
 # 	@mkdir -p $(@D)
 # 	cp $< $@
 # ==============================================================================
-
-
-
-
-# $(BUILD)/Dockerfile-%: base-image/Dockerfile.in $(BUILD)
-#	sed -e 's/ARG_BASEIMAGE/$(subst ',\',$(subst /,\/,$(subst &,\&,$(subst \,\\,$(BASEIMAGE)))))/g' $< > $@
-#
-#
-#assets: base-image/assets/usr/bin/qemu-arm-static base-image/assets/usr/bin/qemu-x86_64-static
-#assets: $(patsubst %,assets%,$(wildcard /usr/bin/qemu-*-static))
-#
-#
-#$(BUILD) base-image/assets/usr/bin:
-#	mkdir -p $@
-#
-#base-image/assets/usr/bin/qemu-%-static: /usr/bin/qemu-%-static base-image/assets/usr/bin 
-#	cp $< $@
-#

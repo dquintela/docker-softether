@@ -4,10 +4,15 @@
 		https://stackoverflow.com/questions/26118303/docker-with-make-build-image-on-dockerfile-change
 		https://github.com/thockin/go-build-template
 	getopts
-	imagem gerada com docker build-arg com git describe
-		https://github.com/thockin/go-build-template/blob/master/Makefile
+
+	DONE: imagem gerada com docker build-arg com git describe
+		  https://github.com/thockin/go-build-template/blob/master/Makefile
+	dentro da dockerfile fazer 
+		git describe --tag --always --dirty
+		ao checkout do softether e incluir o seu output no script.sh
+
 	subimagem -> vpnserver
-	cross-build -> qemu (amd64 + armel?)
+	DONE: cross-build -> qemu (amd64 + armel?)
 
 	docker user mapping -> examples
 
