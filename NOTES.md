@@ -9,6 +9,8 @@
 	subimagem -> vpnserver
 	cross-build -> qemu (amd64 + armel?)
 
+	docker user mapping -> examples
+
 # Helper commands
 
 sudo docker run -it --rm dquintela/softether-i386
