@@ -1,0 +1,8 @@
+#
+# Softether VPN Server / Client / Bridge Built from sources
+#
+FROM ARG_BASEIMAGE
+MAINTAINER Diogo Quintela <dquintela@gmail.com>
+
+ENTRYPOINT ["/docker-softether/run-ARG_APP.sh"]
+CMD ["--help"]

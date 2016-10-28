@@ -9,12 +9,14 @@ MAINTAINER Diogo Quintela <dquintela@gmail.com>
 ARG BUILD_DIR=/tmp/SoftEtherVPN
 ARG SOFTETHER_IMAGE_VERSION
 ARG SOFTETHER_CPU=32bit
+ARG SOFTETHER_UPSTREAM_VERSION
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Persist on final image
 ENV SOFTETHER_BIN="/usr/local/bin" \
 	SOFTETHER_INSTALL="/usr/local/softether" \
-	SOFTETHER_IMAGE_VERSION="${SOFTETHER_IMAGE_VERSION:-v0.0.0}"
+	SOFTETHER_IMAGE_VERSION="${SOFTETHER_IMAGE_VERSION:-v0.0.0}" \
+	SOFTETHER_UPSTREAM_VERSION="${SOFTETHER_UPSTREAM_VERSION:-master}"
 
 COPY host-qemu /
 COPY script /docker-softether/
@@ -31,6 +33,7 @@ RUN set -xe \
 && apt-get install -q -y --no-install-recommends build-essential git libreadline6-dev libssl-dev libncurses5-dev \
 && git clone --depth=1 https://github.com/SoftEtherVPN/SoftEtherVPN.git ${BUILD_DIR} \
 && cd ${BUILD_DIR} \
+&& git checkout ${SOFTETHER_UPSTREAM_VERSION} \
 && cp src/makefiles/linux_${SOFTETHER_CPU}.mak Makefile \
 && make CC=gcc \
 && make install \
