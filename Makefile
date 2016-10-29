@@ -10,21 +10,25 @@ ALL_APPS         := vpnserver vpnbridge vpnclient
 .PRECIOUS: $(foreach arch,$(ALL_ARCH),$(BUILD)/$(arch)/base-image) \
 		   $(foreach arch,$(ALL_ARCH),$(BUILD)/$(arch)/base-image/Dockerfile) \
 		   $(foreach arch,$(ALL_ARCH),$(addprefix $(BUILD)/$(arch)/, $(BASE_IMAGE_FILES))) \
-		   $(foreach arch,$(ALL_ARCH),$(addprefix $(BUILD)/$(arch)/base-image/host-qemu, $(QEMU_STATIC))) 
+		   $(foreach arch,$(ALL_ARCH),$(addprefix $(BUILD)/$(arch)/base-image/host-qemu, $(QEMU_STATIC))) \
+		   $(foreach arch,$(ALL_ARCH),$(foreach app,$(ALL_APPS),$(BUILD)/$(arch)/app-image/$(app))) \
+		   $(foreach arch,$(ALL_ARCH),$(foreach app,$(ALL_APPS),$(BUILD)/$(arch)/app-image/$(app)/Dockerfile))		   
 
 .PHONY:    all all-container all-push clean clean-container
 
 all: all-container
 
-all-container: $(addprefix container-, $(ALL_ARCH))
+all-container: $(addprefix container-, $(ALL_ARCH)) \
+			   $(foreach arch,$(ALL_ARCH),$(foreach app,$(ALL_APPS),container-$(arch)-$(app)))
 
-all-push: all-container $(addprefix push-, $(ALL_ARCH))
+all-push: all-container $(addprefix push-, $(ALL_ARCH)) \
+		  $(foreach arch,$(ALL_ARCH),$(foreach app,$(ALL_APPS),push-$(arch)-$(app)))
 
 clean: clean-container
 	rmdir $(BUILD)
 
 clean-container: 
-	rm -Rf $(foreach arch,$(ALL_ARCH),$(BUILD)/$(arch))
+	rm -Rf $(foreach arch,$(ALL_ARCH),$(BUILD)/$(arch)) 
 	
 BASEIMAGE_amd64 := debian:jessie
 BASEIMAGE_i386  := i386/debian:jessie

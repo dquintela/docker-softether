@@ -1,0 +1,15 @@
+sudo: required
+services:
+  - docker
+before_install:
+  - travis_retry sudo apt-get update
+  - travis_retry sudo apt-get install -qq -y --no-install-recommends qemu-user-static binfmt-support
+  - sudo update-binfmts --display qemu-arm
+script:
+  - uname -a
+  - make all-container
+after_success:
+  - make all-push
+branches:
+  only:
+    - master
