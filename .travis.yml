@@ -9,7 +9,10 @@ script:
   - uname -a
   - make -version
   - cat Makefile
-  - make --debug all-container
+  - make --debug container-i386
+  - make --debug container-amd64
+  - make --debug container-i386-vpnserver
+  - make --debug container-amd64-vpnserver
 after_success:
   - make all-push
 branches:
