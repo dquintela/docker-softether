@@ -7,7 +7,9 @@ before_install:
   - sudo update-binfmts --display qemu-arm
 script:
   - uname -a
-  - make all-container
+  - make -version
+  - cat Makefile
+  - make --debug all-container
 after_success:
   - make all-push
 branches:
