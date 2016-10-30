@@ -1,4 +1,5 @@
 sudo: required
+dist: trusty
 services:
   - docker
 before_install:
@@ -7,6 +8,8 @@ before_install:
   - sudo update-binfmts --display qemu-arm
 script:
   - uname -a
+  - pwd
+  - docker --version
   - make -version
   - cat Makefile
   - make --debug container-i386

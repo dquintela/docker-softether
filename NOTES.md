@@ -33,6 +33,16 @@ sudo docker exec -ti softether-i386 bash
      # Install ip, ifconfig and ssh to test inside attached image
      apt-get update && apt-get install iproute2 net-tools ssh-client
 
+# Circle CI
+	
+	Image is a old trusty with a different gnu make. 4.1 works, circle ci 3.81 won't
+	https://nathanleclaire.com/blog/2014/07/12/10-docker-tips-and-tricks-that-will-make-you-sing-a-whale-song-of-joy/
+
+	Run image that connects to host docker daemon (for make to work it's way)
+	
+	docker run -it -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/docker-softether i386/ubuntu:trusty
+	# apt-get update && apt-get -y --no-install-recommends install make docker.io
+	 
 # Random notes
 
 exec - forward signals
@@ -169,5 +179,3 @@ The command '/bin/sh -c apt-get update' returned a non-zero code: 2
 Makefile:45: recipe for target 'container-amd64' failed
 make: *** [container-amd64] Error 2
 
-
-BUT!
