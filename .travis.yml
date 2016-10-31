@@ -7,6 +7,15 @@ before_install:
   - travis_retry sudo apt-get update
   - travis_retry sudo apt-get install -qq -y --no-install-recommends qemu-user-static binfmt-support
   - sudo update-binfmts --display qemu-arm
+  # shutdown servies on Travis, which may have a memory impact
+  # show memory usage before and after shutdown of services
+  - sudo service --status-all
+  - sudo free -m -t
+  - sudo /etc/init.d/mysql stop
+  - sudo /etc/init.d/postgresql stop
+  - sudo /etc/init.d/couchdb stop
+  - sudo /etc/init.d/redis-server stop
+  - sudo free -m -t
 env:
   - ARCH=amd64
   - ARCH=i386
@@ -21,6 +30,11 @@ script:
   - travis_wait 30 make container-$ARCH container-$ARCH-vpnserver container-$ARCH-vpnbridge container-$ARCH-vpnclient
 #after_success:
 #  - make push-$ARCH
+after_failure:
+  # show memory usage again
+  - sudo free -m -t
+  # show actions of the OOM killer
+  - sudo dmesg
 deploy:
   provider: script
   skip_cleanup: true
