@@ -27,7 +27,8 @@ script:
   - pwd
   - docker --version
   - make -version
-  - travis_wait 30 make container-$ARCH container-$ARCH-vpnserver container-$ARCH-vpnbridge container-$ARCH-vpnclient
+  #- travis_wait 30 make container-$ARCH container-$ARCH-vpnserver container-$ARCH-vpnbridge container-$ARCH-vpnclient
+  - make container-$ARCH container-$ARCH-vpnserver container-$ARCH-vpnbridge container-$ARCH-vpnclient
 #after_success:
 #  - make push-$ARCH
 after_failure:
