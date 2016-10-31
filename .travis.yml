@@ -18,13 +18,13 @@ script:
   - pwd
   - docker --version
   - make -version
-  - make container-$ARCH
+  - make container-$ARCH container-$ARCH-vpnserver container-$ARCH-vpnbridge container-$ARCH-vpnclient
 #after_success:
 #  - make push-$ARCH
 deploy:
   provider: script
   skip_cleanup: true
-  script: make push-$ARCH
+  script: make push-$ARCH push-$ARCH-vpnserver push-$ARCH-vpnbridge push-$ARCH-vpnclient
   on:
     branch: master
 branches:
