@@ -12,11 +12,7 @@ script:
   - pwd
   - docker --version
   - make -version
-  - cat Makefile
-  - make -d --debug container-i386
-  - make --debug container-amd64
-  - make --debug container-i386-vpnserver
-  - make --debug container-amd64-vpnserver
+  - make all-container
 after_success:
   - make all-push
 branches:
