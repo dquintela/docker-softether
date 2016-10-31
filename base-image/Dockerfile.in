@@ -31,7 +31,7 @@ RUN set -xe \
 && apt-get update \
 && apt-get install -q -y --no-install-recommends ca-certificates libreadline6 libssl1.0.0 libncurses5 ethtool iptables \
 && apt-get install -q -y --no-install-recommends build-essential git libreadline6-dev libssl-dev libncurses5-dev \
-&& git clone --verbose --depth=1 https://github.com/SoftEtherVPN/SoftEtherVPN.git ${BUILD_DIR} \
+&& git clone --verbose https://github.com/SoftEtherVPN/SoftEtherVPN.git ${BUILD_DIR} \
 && cd ${BUILD_DIR} \
 && git checkout ${SOFTETHER_UPSTREAM_VERSION} \
 && cp src/makefiles/linux_${SOFTETHER_CPU}.mak Makefile \
