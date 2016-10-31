@@ -7,14 +7,26 @@ before_install:
   - travis_retry sudo apt-get update
   - travis_retry sudo apt-get install -qq -y --no-install-recommends qemu-user-static binfmt-support
   - sudo update-binfmts --display qemu-arm
+env:
+  - ARCH=amd64
+  - ARCH=i386
+  - ARCH=armel
+  - ARCH=rpi
+  - ARCH=armhf
 script:
   - uname -a
   - pwd
   - docker --version
   - make -version
-  - make all-container
-after_success:
-  - make all-push
+  - make container-$ARCH
+#after_success:
+#  - make push-$ARCH
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: make push-$ARCH
+  on:
+    branch: master
 branches:
   only:
     - master
