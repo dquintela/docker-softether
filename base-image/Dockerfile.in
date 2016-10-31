@@ -27,13 +27,28 @@ COPY script /docker-softether/
 # https://github.com/SoftEtherVPN/SoftEtherVPN/search?utf8=%E2%9C%93&q=UnixExec&type=Code
 # https://github.com/SoftEtherVPN/SoftEtherVPN/search?utf8=%E2%9C%93&q=UnixExecSilent&type=Code
 # ca-certificates is because we are using --no-install-recommends
+# --------------------------------------------------------------------------------------
+# Instead of git clone (ot of memory in TravisCI), download the tarball for the ref
+# https://developer.github.com/v3/repos/contents/#get-archive-link
+# https://stackoverflow.com/questions/8377081/github-api-download-zip-or-tarball-link
+#
+# Replace
+# git clone --verbose --depth=1 https://github.com/SoftEtherVPN/SoftEtherVPN.git ${BUILD_DIR} \
+# && cd ${BUILD_DIR} \
+# && git checkout ${SOFTETHER_UPSTREAM_VERSION} \
+#
+# With (untar with striping of base directory)
+# mkdir ${BUILD_DIR} \
+# cd ${BUILD_DIR} \
+# curl -L https://api.github.com/repos/SoftEtherVPN/SoftEtherVPN/tarball/${SOFTETHER_UPSTREAM_VERSION} | tar xf --strip=1
+# --------------------------------------------------------------------------------------
 RUN set -xe \
 && apt-get update \
 && apt-get install -q -y --no-install-recommends ca-certificates libreadline6 libssl1.0.0 libncurses5 ethtool iptables \
-&& apt-get install -q -y --no-install-recommends build-essential git libreadline6-dev libssl-dev libncurses5-dev \
-&& git clone --verbose https://github.com/SoftEtherVPN/SoftEtherVPN.git ${BUILD_DIR} \
+&& apt-get install -q -y --no-install-recommends build-essential curl libreadline6-dev libssl-dev libncurses5-dev \
+&& mkdir ${BUILD_DIR} \
 && cd ${BUILD_DIR} \
-&& git checkout ${SOFTETHER_UPSTREAM_VERSION} \
+&& curl -L https://api.github.com/repos/SoftEtherVPN/SoftEtherVPN/tarball/${SOFTETHER_UPSTREAM_VERSION} | tar xz --strip=1 \
 && cp src/makefiles/linux_${SOFTETHER_CPU}.mak Makefile \
 && make CC=gcc \
 && make install \
@@ -42,7 +57,7 @@ INSTALL_VPNSERVER_DIR=${SOFTETHER_INSTALL}/vpnserver/ \
 INSTALL_VPNBRIDGE_DIR=${SOFTETHER_INSTALL}/vpnbridge/ \
 INSTALL_VPNCLIENT_DIR=${SOFTETHER_INSTALL}/vpnclient/ \
 INSTALL_VPNCMD_DIR=${SOFTETHER_INSTALL}/vpncmd/ \
-&& apt-get remove -y --auto-remove --purge build-essential git libreadline6-dev libssl-dev libncurses5-dev \
+&& apt-get remove -y --auto-remove --purge build-essential curl libreadline6-dev libssl-dev libncurses5-dev \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/* \
 && rm -rf ${BUILD_DIR} \
