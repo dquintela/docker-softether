@@ -1,4 +1,5 @@
-
+# Dockerized VPNether VPN Server / Client / Bridge built from source
+[![Build Status](https://travis-ci.org/dquintela/docker-softether.svg?branch=master)](https://travis-ci.org/dquintela/docker-softether)
 
 ## Run
 
