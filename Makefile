@@ -4,6 +4,7 @@ UPSTREAM_VERSION := $(shell git ls-remote -h https://github.com/SoftEtherVPN/Sof
 BUILD            := build
 ALL_ARCH         := amd64 i386 armel rpi armhf
 BASE_IMAGE_FILES := $(shell find base-image -type f -not -name 'Dockerfile*')
+BASE_IMAGE_DIRS  := $(shell find base-image -type d)
 QEMU_STATIC      := /usr/bin/qemu-arm-static /usr/bin/qemu-x86_64-static
 ALL_APPS         := vpnserver vpnbridge vpnclient
 
@@ -85,19 +86,20 @@ context-$(1): $$(BUILD)/$(1)/base-image/Dockerfile \
 		   $$(addprefix $$(BUILD)/$(1)/base-image/host-qemu, $$(QEMU_STATIC))
 	@echo "Image files aggregated at $$@"
 
+$$(BUILD)/$(1)/base-image/host-qemu/usr/bin: ; mkdir -p $$@
+$$(foreach dir,$$(BASE_IMAGE_DIRS),$$(BUILD)/$(1)/$$(dir)): ; mkdir -p $$@
+
 $$(BUILD)/$(1)/base-image/Dockerfile: BASEIMAGE = $$(call BASEIMAGE_TEMPLATE,$(1))
-$$(BUILD)/$(1)/base-image/Dockerfile: base-image/Dockerfile.in
-	mkdir -p $$(@D)
+$$(BUILD)/$(1)/base-image/Dockerfile: base-image/Dockerfile.in | $$(BUILD)/$(1)/base-image
 	sed \
 		-e 's/ARG_BASEIMAGE/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$$(BASEIMAGE)))))/g' \
 		$$< > $$@
 
-$$(BUILD)/$(1)/base-image/%: base-image/%
-	mkdir -p $$(@D)
+.SECONDEXPANSION:
+$$(BUILD)/$(1)/base-image/%: base-image/% | $$$$(@D)
 	cp $$< $$@
 
-$$(BUILD)/$(1)/base-image/host-qemu/usr/bin/%: /usr/bin/%
-	mkdir -p $$(@D)
+$$(BUILD)/$(1)/base-image/host-qemu/usr/bin/%: /usr/bin/% | $$$$(@D)
 	cp $$< $$@
 
 endef
@@ -136,10 +138,11 @@ container-$(1)-$(2): context-$(1)-$(2)
 context-$(1)-$(2): $$(BUILD)/$(1)/app-image/$(2)/Dockerfile
 	@echo "Image files aggregated at $$@"
 
+$$(BUILD)/$(1)/app-image/$(2): ; mkdir -p $$@
+
 $$(BUILD)/$(1)/app-image/$(2)/Dockerfile: IMAGE = $$(call IMAGE_TEMPLATE,$(1))
 $$(BUILD)/$(1)/app-image/$(2)/Dockerfile: APP_BASEIMAGE = $$(IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION)
-$$(BUILD)/$(1)/app-image/$(2)/Dockerfile: app-image/Dockerfile.in
-	mkdir -p $$(@D)
+$$(BUILD)/$(1)/app-image/$(2)/Dockerfile: app-image/Dockerfile.in | $$(BUILD)/$(1)/app-image/$(2)
 	sed \
 		-e 's/ARG_BASEIMAGE/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$$(APP_BASEIMAGE)))))/g' \
 		-e 's/ARG_APP/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$(2)))))/g' \

@@ -29,8 +29,6 @@ script:
   - make -version
   #- travis_wait 30 make container-$ARCH container-$ARCH-vpnserver container-$ARCH-vpnbridge container-$ARCH-vpnclient
   - make container-$ARCH container-$ARCH-vpnserver container-$ARCH-vpnbridge container-$ARCH-vpnclient
-#after_success:
-#  - make push-$ARCH
 after_failure:
   # show memory usage again
   - sudo free -m -t
@@ -39,7 +37,8 @@ after_failure:
 deploy:
   provider: script
   skip_cleanup: true
-  script: make push-$ARCH push-$ARCH-vpnserver push-$ARCH-vpnbridge push-$ARCH-vpnclient
+  # Use -j to push concurrently
+  script: make -j push-$ARCH push-$ARCH-vpnserver push-$ARCH-vpnbridge push-$ARCH-vpnclient
   on:
     branch: master
 branches:
