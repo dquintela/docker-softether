@@ -21,7 +21,7 @@ SCHEMA_URL       := https://github.com/dquintela/docker-softether
 		   $(foreach arch,$(ALL_ARCH),$(foreach app,$(ALL_APPS),$(BUILD)/$(arch)/app-image/$(app))) \
 		   $(foreach arch,$(ALL_ARCH),$(foreach app,$(ALL_APPS),$(BUILD)/$(arch)/app-image/$(app)/Dockerfile))		   
 
-.PHONY:    all all-context all-container all-push clean
+.PHONY:    all all-context all-container all-push clean markdown
 
 all: all-container
 
@@ -60,6 +60,55 @@ CPU_BITS_TEMPLATE  = $(CPU_BITS_$(1))
 BASEIMAGE 		   = $(BASEIMAGE_$(*))
 BASEIMAGE_TEMPLATE = $(BASEIMAGE_$(1))
 DOCKER             = docker
+
+markdown: $(BUILD)/markdown.md
+
+$(BUILD)/markdown.md: IMAGE=$(call IMAGE_TEMPLATE,$$arch)
+$(BUILD)/markdown.md: APP_IMAGE=$(call APP_IMAGE_TEMPLATE,$$arch,$$app)
+$(BUILD)/markdown.md:
+	@#echo $(IMAGE)
+	@#echo $(APP_IMAGE)
+	@#    echo $$arch $(IMAGE) $(APP_IMAGE);
+	
+	@echo "" > $@
+	
+	@echo -n "| image \ arch |" >> $@
+	@for arch in $(ALL_ARCH) ; do \
+	  echo -n " $$arch |" >> $@ ; \
+	done
+	@echo "" >> $@
+	
+	@echo -n "|---:|" >> $@
+	@for arch in $(ALL_ARCH) ; do \
+	  echo -n ":---:|" >> $@ ; \
+	done
+	@echo "" >> $@
+	
+	@echo -n "| base-image |" >> $@
+	@for arch in $(ALL_ARCH) ; do \
+	  echo -n " $(IMAGE) |" >> $@ ; \
+	done
+	@echo "" >> $@
+	
+	@for app in $(ALL_APPS) ; do \
+	  echo -n "| $$app |" >> $@ ; \
+	  for arch in $(ALL_ARCH) ; do \
+	    echo -n " $(APP_IMAGE) |"  >> $@ ; \
+	  done ; \
+	  echo ""  >> $@ ; \
+	done
+
+	@# Separator
+	@echo "" >> $@
+	
+	@echo "| Image | Image Size | Image Version | Docker Pulls |" >> $@
+	@echo "|------:|:-----------:|:----------:|:-------------:|" >> $@
+	@for arch in $(ALL_ARCH) ; do \
+	  echo "| $(IMAGE) | [![Image Size](https://images.microbadger.com/badges/image/$(IMAGE).svg)](https://microbadger.com/images/$(IMAGE)) | [![Image Version](https://images.microbadger.com/badges/version/$(IMAGE).svg)](https://microbadger.com/images/$(IMAGE)) | [![Docker Pulls](https://img.shields.io/docker/pulls/$(IMAGE).svg)](https://hub.docker.com/r/$(IMAGE)) |"  >> $@ ; \
+	  for app in $(ALL_APPS) ; do \
+	    echo "| $(APP_IMAGE) | [![Image Size](https://images.microbadger.com/badges/image/$(APP_IMAGE).svg)](https://microbadger.com/images/$(APP_IMAGE)) | [![Image Version](https://images.microbadger.com/badges/version/$(APP_IMAGE).svg)](https://microbadger.com/images/$(APP_IMAGE)) | [![Docker Pulls](https://img.shields.io/docker/pulls/$(APP_IMAGE).svg)](https://hub.docker.com/r/$(APP_IMAGE)) |" >> $@ ; \
+	  done ; \
+	done
 
 # ==============================================================================
 # This block should generate the requirements as was in proceding targets by weren't working [See issue #1]
