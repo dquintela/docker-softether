@@ -1,5 +1,5 @@
 #
-# Softether VPN Server / Client / Bridge Built from sources
+# SoftEther VPN Server / Client / Bridge built from source for ARG_ARCH
 #
 FROM ARG_BASEIMAGE
 MAINTAINER Diogo Quintela <dquintela@gmail.com>
@@ -7,16 +7,32 @@ MAINTAINER Diogo Quintela <dquintela@gmail.com>
 # ENV like, but does not persist on final image
 # Can be replaced by --build-arg on docker-build
 ARG BUILD_DIR=/tmp/SoftEtherVPN
-ARG SOFTETHER_IMAGE_VERSION
+ARG BUILD_DATE
+ARG IMAGE_VERSION
+ARG VCS_REF
+ARG VCS_URL
+ARG SCHEMA_USAGE
+ARG SCHEMA_URL
+ARG UPSTREAM_VERSION
 ARG SOFTETHER_CPU=32bit
-ARG SOFTETHER_UPSTREAM_VERSION
 ARG DEBIAN_FRONTEND=noninteractive
+
+LABEL org.label-schema.build-date="${BUILD_DATE}" \
+      org.label-schema.name="softether-ARG_ARCH" \
+      org.label-schema.description="SoftEther VPN Server / Client / Bridge built from source for ARG_ARCH" \
+      org.label-schema.usage="${SCHEMA_USAGE}" \
+      org.label-schema.url="${SCHEMA_URL}" \
+      org.label-schema.vcs-ref="${VCS_REF}" \
+      org.label-schema.vcs-url="${VCS_URL}" \
+      org.label-schema.vendor="Diogo Quintela" \
+      org.label-schema.version="${IMAGE_VERSION:-v0.0.0}" \
+      org.label-schema.schema-version="1.0"
 
 # Persist on final image
 ENV SOFTETHER_BIN="/usr/local/bin" \
 	SOFTETHER_INSTALL="/usr/local/softether" \
-	SOFTETHER_IMAGE_VERSION="${SOFTETHER_IMAGE_VERSION:-v0.0.0}" \
-	SOFTETHER_UPSTREAM_VERSION="${SOFTETHER_UPSTREAM_VERSION:-master}"
+	SOFTETHER_IMAGE_VERSION="${IMAGE_VERSION:-v0.0.0}" \
+	SOFTETHER_UPSTREAM_VERSION="${UPSTREAM_VERSION:-master}"
 
 COPY host-qemu /
 COPY script /docker-softether/

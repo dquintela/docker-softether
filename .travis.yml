@@ -11,10 +11,7 @@ before_install:
   # show memory usage before and after shutdown of services
   - sudo service --status-all
   - sudo free -m -t
-  # - sudo /etc/init.d/mysql stop
   - sudo /etc/init.d/postgresql stop
-  #- sudo /etc/init.d/couchdb stop
-  #- sudo /etc/init.d/redis-server stop
   - sudo free -m -t
 env:
   - ARCH=amd64
@@ -24,10 +21,8 @@ env:
   - ARCH=armhf
 script:
   - uname -a
-  - pwd
   - docker --version
   - make -version
-  #- travis_wait 30 make container-$ARCH container-$ARCH-vpnserver container-$ARCH-vpnbridge container-$ARCH-vpnclient
   - make container-$ARCH container-$ARCH-vpnserver container-$ARCH-vpnbridge container-$ARCH-vpnclient
 after_failure:
   # show memory usage again
@@ -37,8 +32,7 @@ after_failure:
 deploy:
   provider: script
   skip_cleanup: true
-  # Use -j to push concurrently
-  script: make -j push-$ARCH push-$ARCH-vpnserver push-$ARCH-vpnbridge push-$ARCH-vpnclient
+  script: make push-$ARCH push-$ARCH-vpnserver push-$ARCH-vpnbridge push-$ARCH-vpnclient
   on:
     branch: master
 branches:

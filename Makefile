@@ -1,4 +1,6 @@
 # This version-strategy uses git tags to set the version string
+GIT_URL          := $(shell git remote get-url origin)
+GIT_REVISION     := $(shell git rev-parse --short HEAD)
 VERSION          := $(shell git describe --tag --always --dirty)
 UPSTREAM_VERSION := $(shell git ls-remote -h https://github.com/SoftEtherVPN/SoftEtherVPN.git master | cut -f 1 | cut -c1-7)
 BUILD            := build
@@ -7,6 +9,8 @@ BASE_IMAGE_FILES := $(shell find base-image -type f -not -name 'Dockerfile*')
 BASE_IMAGE_DIRS  := $(shell find base-image -type d)
 QEMU_STATIC      := /usr/bin/qemu-arm-static /usr/bin/qemu-x86_64-static
 ALL_APPS         := vpnserver vpnbridge vpnclient
+SCHEMA_USAGE     := https://github.com/dquintela/docker-softether/blob/$(GIT_REVISION)/README.md
+SCHEMA_URL       := https://github.com/dquintela/docker-softether
 
 .PRECIOUS: $(foreach arch,$(ALL_ARCH),$(BUILD)/$(arch)/base-image) \
 		   $(foreach arch,$(ALL_ARCH),$(BUILD)/$(arch)/base-image/Dockerfile) \
@@ -59,24 +63,26 @@ DOCKER             = docker
 # This block should generate the requirements as was in proceding targets by weren't working [See issue #1]
 define ARCH_TEMPLATE
 push-$(1): IMAGE = $$(call IMAGE_TEMPLATE,$(1))
-push-$(1): container-$(1) docker-login
-	$$(DOCKER) push $$(IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION)
-	@echo "pushed: $$(IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION)"
-	$$(DOCKER) push $$(IMAGE):$$(VERSION)
-	@echo "pushed: $$(IMAGE):$$(VERSION)"
+push-$(1): docker-login
 	$$(DOCKER) push $$(IMAGE):latest
 	@echo "pushed: $$(IMAGE):latest"
+	$$(DOCKER) push $$(IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION)
+	@echo "pushed: $$(IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION)"
 
 container-$(1): IMAGE = $$(call IMAGE_TEMPLATE,$(1))
 container-$(1): CPU_BITS = $$(call CPU_BITS_TEMPLATE,$(1))
 container-$(1): context-$(1)
 	$$(DOCKER) build \
 		--pull \
+		--build-arg BUILD_DATE=$$(shell date -u +"%Y-%m-%dT%H:%M:%SZ") \
+		--build-arg VCS_URL=$$(GIT_URL) \
+		--build-arg VCS_REF=$$(GIT_REVISION) \
+		--build-arg IMAGE_VERSION=$$(VERSION) \
+		--build-arg UPSTREAM_VERSION=$$(UPSTREAM_VERSION) \
 		--build-arg SOFTETHER_CPU=$$(CPU_BITS) \
-		--build-arg SOFTETHER_IMAGE_VERSION=$$(VERSION) \
-		--build-arg SOFTETHER_UPSTREAM_VERSION=$$(UPSTREAM_VERSION) \
+		--build-arg SCHEMA_USAGE=$$(SCHEMA_USAGE) \
+		--build-arg SCHEMA_URL=$$(SCHEMA_URL) \
 		-t $$(IMAGE):latest \
-		-t $$(IMAGE):$$(VERSION) \
 		-t $$(IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION) \
 		$$(BUILD)/$(1)/base-image
 	$$(DOCKER) images -q $$(IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION)
@@ -93,6 +99,7 @@ $$(BUILD)/$(1)/base-image/Dockerfile: BASEIMAGE = $$(call BASEIMAGE_TEMPLATE,$(1
 $$(BUILD)/$(1)/base-image/Dockerfile: base-image/Dockerfile.in | $$(BUILD)/$(1)/base-image
 	sed \
 		-e 's/ARG_BASEIMAGE/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$$(BASEIMAGE)))))/g' \
+		-e 's/ARG_ARCH/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$(1)))))/g' \
 		$$< > $$@
 
 .SECONDEXPANSION:
@@ -118,19 +125,22 @@ $(foreach arch,$(ALL_ARCH),$(eval $(call ARCH_TEMPLATE,$(arch))))
 # Container that extends from main and for each APP generates a simple image that runs the right entrypoint
 define CONTAINER_APP_TEMPLATE
 push-$(1)-$(2): APP_IMAGE = $$(call APP_IMAGE_TEMPLATE,$(1),$(2))
-push-$(1)-$(2): container-$(1)-$(2) docker-login
-	$$(DOCKER) push $$(APP_IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION)
-	@echo "pushed: $$(APP_IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION)"
-	$$(DOCKER) push $$(APP_IMAGE):$$(VERSION)
-	@echo "pushed: $$(APP_IMAGE):$$(VERSION)"
+push-$(1)-$(2): docker-login
 	$$(DOCKER) push $$(APP_IMAGE):latest
 	@echo "pushed: $$(APP_IMAGE):latest"
+	$$(DOCKER) push $$(APP_IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION)
+	@echo "pushed: $$(APP_IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION)"
 
 container-$(1)-$(2): APP_IMAGE = $$(call APP_IMAGE_TEMPLATE,$(1),$(2))
 container-$(1)-$(2): context-$(1)-$(2)
 	$$(DOCKER) build \
+		--build-arg BUILD_DATE=$$(shell date -u +"%Y-%m-%dT%H:%M:%SZ") \
+		--build-arg VCS_URL=$$(GIT_URL) \
+		--build-arg VCS_REF=$$(GIT_REVISION) \
+		--build-arg IMAGE_VERSION=$$(VERSION) \
+		--build-arg SCHEMA_USAGE=$$(SCHEMA_USAGE) \
+		--build-arg SCHEMA_URL=$$(SCHEMA_URL) \
 		-t $$(APP_IMAGE):latest \
-		-t $$(APP_IMAGE):$$(VERSION) \
 		-t $$(APP_IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION) \
 		$$(BUILD)/$(1)/app-image/$(2)
 	$$(DOCKER) images -q $$(APP_IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION)
@@ -145,6 +155,7 @@ $$(BUILD)/$(1)/app-image/$(2)/Dockerfile: APP_BASEIMAGE = $$(IMAGE):$$(VERSION)-
 $$(BUILD)/$(1)/app-image/$(2)/Dockerfile: app-image/Dockerfile.in | $$(BUILD)/$(1)/app-image/$(2)
 	sed \
 		-e 's/ARG_BASEIMAGE/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$$(APP_BASEIMAGE)))))/g' \
+		-e 's/ARG_ARCH/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$(1)))))/g' \
 		-e 's/ARG_APP/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$(2)))))/g' \
 		$$< > $$@
 

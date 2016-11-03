@@ -1,8 +1,26 @@
 #
-# Softether VPN Server / Client / Bridge Built from sources
+# SoftEther VPN ARG_APP built from source for ARG_ARCH
 #
 FROM ARG_BASEIMAGE
 MAINTAINER Diogo Quintela <dquintela@gmail.com>
+
+ARG BUILD_DATE
+ARG IMAGE_VERSION
+ARG VCS_REF
+ARG VCS_URL
+ARG SCHEMA_USAGE
+ARG SCHEMA_URL
+
+LABEL org.label-schema.build-date="${BUILD_DATE}" \
+      org.label-schema.name="softether-ARG_APP-ARG_ARCH" \
+      org.label-schema.description="SoftEther VPN ARG_APP built from source for ARG_ARCH" \
+      org.label-schema.usage="${SCHEMA_USAGE}" \
+      org.label-schema.url="${SCHEMA_URL}" \
+      org.label-schema.vcs-ref="${VCS_REF}" \
+      org.label-schema.vcs-url="${VCS_URL}" \
+      org.label-schema.vendor="Diogo Quintela" \
+      org.label-schema.version="${IMAGE_VERSION:-v0.0.0}" \
+      org.label-schema.schema-version="1.0"
 
 ENTRYPOINT ["/docker-softether/run-ARG_APP.sh"]
 CMD ["--help"]
