@@ -1,5 +1,7 @@
 # This version-strategy uses git tags to set the version string
-GIT_URL          := $(shell git remote get-url origin)
+# This approach doesn't work on travis git version
+# GIT_URL          := $(shell git remote get-url origin)
+GIT_URL          := $(shell git config --get remote.origin.url)
 GIT_REVISION     := $(shell git rev-parse --short HEAD)
 VERSION          := $(shell git describe --tag --always --dirty)
 UPSTREAM_VERSION := $(shell git ls-remote -h https://github.com/SoftEtherVPN/SoftEtherVPN.git master | cut -f 1 | cut -c1-7)
