@@ -6,7 +6,9 @@ services:
 before_install:
   - travis_retry sudo apt-get update
   - travis_retry sudo apt-get install -qq -y --no-install-recommends qemu-user-static binfmt-support
+  - ls /usr/bin/qemu-*-static
   - sudo update-binfmts --display qemu-arm
+  - sudo update-binfmts --display qemu-aarch64
   # shutdown servies on Travis, which may have a memory impact
   # show memory usage before and after shutdown of services
   - sudo service --status-all
@@ -19,6 +21,7 @@ env:
   - ARCH=armel
   - ARCH=rpi
   - ARCH=armhf
+  - ARCH=aarch64
 script:
   - uname -a
   - docker --version

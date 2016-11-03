@@ -19,6 +19,7 @@ The app-image extends base-image to simplify that necessity - app-image can use 
 * armel - ARMv5 (works with Raspberry Pi 1 (A, B, A+, B+, Zero), but prefer rpi below)
 * rpi - ARMv6+VFP2 (armhf rebuilt RPi's ARM variant - Raspberry Pi 1 (A, B, A+, B+, Zero)
 * armhf - ARMv7 (compatible with Raspberry Pi 2/3)
+* aarch64 - ARMv8 or ARM64
 
 See https://wiki.debian.org/RaspberryPi
 
@@ -26,12 +27,12 @@ See https://wiki.debian.org/RaspberryPi
 
 The images are available on my Docker Hub page https://hub.docker.com/r/dquintela/
 
-| image \ arch | amd64 | i386 | armel | rpi | armhf |
-|---:|:---:|:---:|:---:|:---:|:---:|
-| base-image | dquintela/softether-amd64 | dquintela/softether-i386 | dquintela/softether-armel | dquintela/softether-rpi | dquintela/softether-armhf |
-| vpnserver | dquintela/softether-vpnserver-amd64 | dquintela/softether-vpnserver-i386 | dquintela/softether-vpnserver-armel | dquintela/softether-vpnserver-rpi | dquintela/softether-vpnserver-armhf |
-| vpnbridge | dquintela/softether-vpnbridge-amd64 | dquintela/softether-vpnbridge-i386 | dquintela/softether-vpnbridge-armel | dquintela/softether-vpnbridge-rpi | dquintela/softether-vpnbridge-armhf |
-| vpnclient | dquintela/softether-vpnclient-amd64 | dquintela/softether-vpnclient-i386 | dquintela/softether-vpnclient-armel | dquintela/softether-vpnclient-rpi | dquintela/softether-vpnclient-armhf |
+| image \ arch | amd64 | i386 | armel | rpi | armhf | aarch64 |
+|---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| base-image | dquintela/softether-amd64 | dquintela/softether-i386 | dquintela/softether-armel | dquintela/softether-rpi | dquintela/softether-armhf | dquintela/softether-aarch64 |
+| vpnserver | dquintela/softether-vpnserver-amd64 | dquintela/softether-vpnserver-i386 | dquintela/softether-vpnserver-armel | dquintela/softether-vpnserver-rpi | dquintela/softether-vpnserver-armhf | dquintela/softether-vpnserver-aarch64 |
+| vpnbridge | dquintela/softether-vpnbridge-amd64 | dquintela/softether-vpnbridge-i386 | dquintela/softether-vpnbridge-armel | dquintela/softether-vpnbridge-rpi | dquintela/softether-vpnbridge-armhf | dquintela/softether-vpnbridge-aarch64 |
+| vpnclient | dquintela/softether-vpnclient-amd64 | dquintela/softether-vpnclient-i386 | dquintela/softether-vpnclient-armel | dquintela/softether-vpnclient-rpi | dquintela/softether-vpnclient-armhf | dquintela/softether-vpnclient-aarch64 |
 
 This are the badge statitics for those images.
 
@@ -57,6 +58,10 @@ This are the badge statitics for those images.
 | dquintela/softether-vpnserver-armhf | [![Image Size](https://images.microbadger.com/badges/image/dquintela/softether-vpnserver-armhf.svg)](https://microbadger.com/images/dquintela/softether-vpnserver-armhf) | [![Image Version](https://images.microbadger.com/badges/version/dquintela/softether-vpnserver-armhf.svg)](https://microbadger.com/images/dquintela/softether-vpnserver-armhf) | [![Docker Pulls](https://img.shields.io/docker/pulls/dquintela/softether-vpnserver-armhf.svg)](https://hub.docker.com/r/dquintela/softether-vpnserver-armhf) |
 | dquintela/softether-vpnbridge-armhf | [![Image Size](https://images.microbadger.com/badges/image/dquintela/softether-vpnbridge-armhf.svg)](https://microbadger.com/images/dquintela/softether-vpnbridge-armhf) | [![Image Version](https://images.microbadger.com/badges/version/dquintela/softether-vpnbridge-armhf.svg)](https://microbadger.com/images/dquintela/softether-vpnbridge-armhf) | [![Docker Pulls](https://img.shields.io/docker/pulls/dquintela/softether-vpnbridge-armhf.svg)](https://hub.docker.com/r/dquintela/softether-vpnbridge-armhf) |
 | dquintela/softether-vpnclient-armhf | [![Image Size](https://images.microbadger.com/badges/image/dquintela/softether-vpnclient-armhf.svg)](https://microbadger.com/images/dquintela/softether-vpnclient-armhf) | [![Image Version](https://images.microbadger.com/badges/version/dquintela/softether-vpnclient-armhf.svg)](https://microbadger.com/images/dquintela/softether-vpnclient-armhf) | [![Docker Pulls](https://img.shields.io/docker/pulls/dquintela/softether-vpnclient-armhf.svg)](https://hub.docker.com/r/dquintela/softether-vpnclient-armhf) |
+| dquintela/softether-aarch64 | [![Image Size](https://images.microbadger.com/badges/image/dquintela/softether-aarch64.svg)](https://microbadger.com/images/dquintela/softether-aarch64) | [![Image Version](https://images.microbadger.com/badges/version/dquintela/softether-aarch64.svg)](https://microbadger.com/images/dquintela/softether-aarch64) | [![Docker Pulls](https://img.shields.io/docker/pulls/dquintela/softether-aarch64.svg)](https://hub.docker.com/r/dquintela/softether-aarch64) |
+| dquintela/softether-vpnserver-aarch64 | [![Image Size](https://images.microbadger.com/badges/image/dquintela/softether-vpnserver-aarch64.svg)](https://microbadger.com/images/dquintela/softether-vpnserver-aarch64) | [![Image Version](https://images.microbadger.com/badges/version/dquintela/softether-vpnserver-aarch64.svg)](https://microbadger.com/images/dquintela/softether-vpnserver-aarch64) | [![Docker Pulls](https://img.shields.io/docker/pulls/dquintela/softether-vpnserver-aarch64.svg)](https://hub.docker.com/r/dquintela/softether-vpnserver-aarch64) |
+| dquintela/softether-vpnbridge-aarch64 | [![Image Size](https://images.microbadger.com/badges/image/dquintela/softether-vpnbridge-aarch64.svg)](https://microbadger.com/images/dquintela/softether-vpnbridge-aarch64) | [![Image Version](https://images.microbadger.com/badges/version/dquintela/softether-vpnbridge-aarch64.svg)](https://microbadger.com/images/dquintela/softether-vpnbridge-aarch64) | [![Docker Pulls](https://img.shields.io/docker/pulls/dquintela/softether-vpnbridge-aarch64.svg)](https://hub.docker.com/r/dquintela/softether-vpnbridge-aarch64) |
+| dquintela/softether-vpnclient-aarch64 | [![Image Size](https://images.microbadger.com/badges/image/dquintela/softether-vpnclient-aarch64.svg)](https://microbadger.com/images/dquintela/softether-vpnclient-aarch64) | [![Image Version](https://images.microbadger.com/badges/version/dquintela/softether-vpnclient-aarch64.svg)](https://microbadger.com/images/dquintela/softether-vpnclient-aarch64) | [![Docker Pulls](https://img.shields.io/docker/pulls/dquintela/softether-vpnclient-aarch64.svg)](https://hub.docker.com/r/dquintela/softether-vpnclient-aarch64) |
 
 ## Run
 

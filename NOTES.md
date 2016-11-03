@@ -40,7 +40,7 @@ sudo docker exec -ti softether-i386 bash
 
 	Run image that connects to host docker daemon (for make to work it's way)
 	
-	docker run -it -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/docker-softether i386/ubuntu:trusty
+	docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/docker-softether i386/ubuntu:trusty
 	# apt-get update && apt-get -y --no-install-recommends install make docker.io ca-certificates
 	 
 # Random notes

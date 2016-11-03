@@ -6,10 +6,10 @@ GIT_REVISION     := $(shell git rev-parse --short HEAD)
 VERSION          := $(shell git describe --tag --always --dirty)
 UPSTREAM_VERSION := $(shell git ls-remote -h https://github.com/SoftEtherVPN/SoftEtherVPN.git master | cut -f 1 | cut -c1-7)
 BUILD            := build
-ALL_ARCH         := amd64 i386 armel rpi armhf
+ALL_ARCH         := amd64 i386 armel rpi armhf aarch64
 BASE_IMAGE_FILES := $(shell find base-image -type f -not -name 'Dockerfile*')
 BASE_IMAGE_DIRS  := $(shell find base-image -type d)
-QEMU_STATIC      := /usr/bin/qemu-arm-static /usr/bin/qemu-x86_64-static
+QEMU_STATIC      := /usr/bin/qemu-arm-static /usr/bin/qemu-aarch64-static  /usr/bin/qemu-x86_64-static
 ALL_APPS         := vpnserver vpnbridge vpnclient
 SCHEMA_USAGE     := https://github.com/dquintela/docker-softether/blob/$(GIT_REVISION)/README.md
 SCHEMA_URL       := https://github.com/dquintela/docker-softether
@@ -21,7 +21,7 @@ SCHEMA_URL       := https://github.com/dquintela/docker-softether
 		   $(foreach arch,$(ALL_ARCH),$(foreach app,$(ALL_APPS),$(BUILD)/$(arch)/app-image/$(app))) \
 		   $(foreach arch,$(ALL_ARCH),$(foreach app,$(ALL_APPS),$(BUILD)/$(arch)/app-image/$(app)/Dockerfile))		   
 
-.PHONY:    all all-context all-container all-push clean markdown
+.PHONY:    all all-context all-container all-push clean $(BUILD)/markdown.md
 
 all: all-container
 
@@ -37,16 +37,18 @@ all-push: all-container $(addprefix push-, $(ALL_ARCH)) \
 clean:
 	rm -Rf $(BUILD)
 	
-BASEIMAGE_amd64 := debian:jessie
-BASEIMAGE_i386  := i386/debian:jessie
-BASEIMAGE_armel := armel/debian:jessie
-BASEIMAGE_rpi   := resin/rpi-raspbian:jessie
-BASEIMAGE_armhf := armhf/debian:jessie
-CPU_BITS_amd64  := 64bit
-CPU_BITS_i386   := 32bit
-CPU_BITS_armel  := 32bit
-CPU_BITS_rpi    := 32bit
-CPU_BITS_armhf  := 32bit
+BASEIMAGE_amd64   := debian:jessie
+BASEIMAGE_i386    := i386/debian:jessie
+BASEIMAGE_armel   := armel/debian:jessie
+BASEIMAGE_rpi     := resin/rpi-raspbian:jessie
+BASEIMAGE_armhf   := armhf/debian:jessie
+BASEIMAGE_aarch64 := aarch64/debian:jessie
+CPU_BITS_amd64    := 64bit
+CPU_BITS_i386     := 32bit
+CPU_BITS_armel    := 32bit
+CPU_BITS_rpi      := 32bit
+CPU_BITS_armhf    := 32bit
+CPU_BITS_aarch64  := 64bit
 
 docker-login:
 	@echo "About to login on docker hub with user $(DOCKER_USERNAME)"
@@ -70,7 +72,7 @@ $(BUILD)/markdown.md:
 	@#echo $(APP_IMAGE)
 	@#    echo $$arch $(IMAGE) $(APP_IMAGE);
 	
-	@echo "" > $@
+	@echo -n "" > $@
 	
 	@echo -n "| image \ arch |" >> $@
 	@for arch in $(ALL_ARCH) ; do \
@@ -109,6 +111,8 @@ $(BUILD)/markdown.md:
 	    echo "| $(APP_IMAGE) | [![Image Size](https://images.microbadger.com/badges/image/$(APP_IMAGE).svg)](https://microbadger.com/images/$(APP_IMAGE)) | [![Image Version](https://images.microbadger.com/badges/version/$(APP_IMAGE).svg)](https://microbadger.com/images/$(APP_IMAGE)) | [![Docker Pulls](https://img.shields.io/docker/pulls/$(APP_IMAGE).svg)](https://hub.docker.com/r/$(APP_IMAGE)) |" >> $@ ; \
 	  done ; \
 	done
+	
+	@echo "Markdown helper file generated at $@"
 
 # ==============================================================================
 # This block should generate the requirements as was in proceding targets by weren't working [See issue #1]
