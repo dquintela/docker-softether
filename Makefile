@@ -48,7 +48,7 @@ CPU_BITS_i386     := 32bit
 CPU_BITS_armel    := 32bit
 CPU_BITS_rpi      := 32bit
 CPU_BITS_armhf    := 32bit
-CPU_BITS_aarch64  := 64bit
+CPU_BITS_aarch64  := 32bit
 
 docker-login:
 	@echo "About to login on docker hub with user $(DOCKER_USERNAME)"
