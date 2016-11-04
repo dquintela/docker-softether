@@ -5,6 +5,7 @@ GIT_URL          := $(shell git config --get remote.origin.url)
 GIT_REVISION     := $(shell git rev-parse --short HEAD)
 VERSION          := $(shell git describe --tag --always --dirty)
 UPSTREAM_VERSION := $(shell git ls-remote -h https://github.com/SoftEtherVPN/SoftEtherVPN.git master | cut -f 1 | cut -c1-7)
+FULL_VERSION     := $(VERSION)-upstream-$(UPSTREAM_VERSION)
 BUILD            := build
 ALL_ARCH         := amd64 i386 armel rpi armhf aarch64
 BASE_IMAGE_FILES := $(shell find base-image -type f -not -name 'Dockerfile*')
@@ -54,26 +55,34 @@ docker-login:
 	@echo "About to login on docker hub with user $(DOCKER_USERNAME)"
 	@ $(DOCKER) login -u=$(DOCKER_USERNAME) -p=$(DOCKER_PASSWORD)
 
-IMAGE              = dquintela/softether-$(*)
-IMAGE_TEMPLATE     = dquintela/softether-$(1)
-APP_IMAGE_TEMPLATE = dquintela/softether-$(2)-$(1)
-CPU_BITS		   = $(CPU_BITS_$(*))
-CPU_BITS_TEMPLATE  = $(CPU_BITS_$(1))
-BASEIMAGE 		   = $(BASEIMAGE_$(*))
-BASEIMAGE_TEMPLATE = $(BASEIMAGE_$(1))
-DOCKER             = docker
+#IMAGE               = dquintela/softether-$(*)
+S_IMAGE_TEMPLATE     = softether-$(1)
+S_APP_IMAGE_TEMPLATE = softether-$(2)-$(1)
+IMAGE_TEMPLATE       = dquintela/$(call S_IMAGE_TEMPLATE,$(1))
+APP_IMAGE_TEMPLATE   = dquintela/$(call S_APP_IMAGE_TEMPLATE,$(1),$(2))
+#CPU_BITS		     = $(CPU_BITS_$(*))
+CPU_BITS_TEMPLATE    = $(CPU_BITS_$(1))
+#BASEIMAGE 		     = $(BASEIMAGE_$(*))
+BASEIMAGE_TEMPLATE   = $(BASEIMAGE_$(1))
+DOCKER               = docker
 
 markdown: $(BUILD)/markdown.md
 
+$(BUILD)/markdown.md: S_IMAGE=$(call S_IMAGE_TEMPLATE,$$arch)
+$(BUILD)/markdown.md: S_APP_IMAGE=$(call S_APP_IMAGE_TEMPLATE,$$arch,$$app)
 $(BUILD)/markdown.md: IMAGE=$(call IMAGE_TEMPLATE,$$arch)
 $(BUILD)/markdown.md: APP_IMAGE=$(call APP_IMAGE_TEMPLATE,$$arch,$$app)
 $(BUILD)/markdown.md:
-	@#echo $(IMAGE)
-	@#echo $(APP_IMAGE)
-	@#    echo $$arch $(IMAGE) $(APP_IMAGE);
+	@echo S_IMAGE='$(S_IMAGE)'
+	@echo S_APP_IMAGE='$(S_APP_IMAGE)'
+	@echo IMAGE='$(IMAGE)'
+	@echo APP_IMAGE='$(APP_IMAGE)'
 	
 	@echo -n "" > $@
 	
+	@############################################
+	@# FIRST TABLE
+	@############################################
 	@echo -n "| image \ arch |" >> $@
 	@for arch in $(ALL_ARCH) ; do \
 	  echo -n " $$arch |" >> $@ ; \
@@ -88,19 +97,21 @@ $(BUILD)/markdown.md:
 	
 	@echo -n "| base-image |" >> $@
 	@for arch in $(ALL_ARCH) ; do \
-	  echo -n " $(IMAGE) |" >> $@ ; \
+	  echo -n " $(S_IMAGE) |" >> $@ ; \
 	done
 	@echo "" >> $@
 	
 	@for app in $(ALL_APPS) ; do \
 	  echo -n "| $$app |" >> $@ ; \
 	  for arch in $(ALL_ARCH) ; do \
-	    echo -n " $(APP_IMAGE) |"  >> $@ ; \
+	    echo -n " $(S_APP_IMAGE) |"  >> $@ ; \
 	  done ; \
 	  echo ""  >> $@ ; \
 	done
 
-	@# Separator
+	@############################################
+	@# SECOND TABLE
+	@############################################
 	@echo "" >> $@
 	
 	@echo "| Image | Image Size | Image Version | Docker Pulls |" >> $@
@@ -121,8 +132,8 @@ push-$(1): IMAGE = $$(call IMAGE_TEMPLATE,$(1))
 push-$(1): docker-login
 	$$(DOCKER) push $$(IMAGE):latest
 	@echo "pushed: $$(IMAGE):latest"
-	$$(DOCKER) push $$(IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION)
-	@echo "pushed: $$(IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION)"
+	$$(DOCKER) push $$(IMAGE):$$(FULL_VERSION)
+	@echo "pushed: $$(IMAGE):$$(FULL_VERSION)"
 
 container-$(1): IMAGE = $$(call IMAGE_TEMPLATE,$(1))
 container-$(1): CPU_BITS = $$(call CPU_BITS_TEMPLATE,$(1))
@@ -132,15 +143,15 @@ container-$(1): context-$(1)
 		--build-arg BUILD_DATE=$$(shell date -u +"%Y-%m-%dT%H:%M:%SZ") \
 		--build-arg VCS_URL=$$(GIT_URL) \
 		--build-arg VCS_REF=$$(GIT_REVISION) \
-		--build-arg IMAGE_VERSION=$$(VERSION) \
+		--build-arg IMAGE_VERSION=$$(FULL_VERSION) \
 		--build-arg UPSTREAM_VERSION=$$(UPSTREAM_VERSION) \
 		--build-arg SOFTETHER_CPU=$$(CPU_BITS) \
 		--build-arg SCHEMA_USAGE=$$(SCHEMA_USAGE) \
 		--build-arg SCHEMA_URL=$$(SCHEMA_URL) \
 		-t $$(IMAGE):latest \
-		-t $$(IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION) \
+		-t $$(IMAGE):$$(FULL_VERSION) \
 		$$(BUILD)/$(1)/base-image
-	$$(DOCKER) images -q $$(IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION)
+	$$(DOCKER) images -q $$(IMAGE):$$(FULL_VERSION)
 
 context-$(1): $$(BUILD)/$(1)/base-image/Dockerfile \
 		   $$(addprefix $$(BUILD)/$(1)/, $$(BASE_IMAGE_FILES)) \
@@ -183,8 +194,8 @@ push-$(1)-$(2): APP_IMAGE = $$(call APP_IMAGE_TEMPLATE,$(1),$(2))
 push-$(1)-$(2): docker-login
 	$$(DOCKER) push $$(APP_IMAGE):latest
 	@echo "pushed: $$(APP_IMAGE):latest"
-	$$(DOCKER) push $$(APP_IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION)
-	@echo "pushed: $$(APP_IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION)"
+	$$(DOCKER) push $$(APP_IMAGE):$$(FULL_VERSION)
+	@echo "pushed: $$(APP_IMAGE):$$(FULL_VERSION)"
 
 container-$(1)-$(2): APP_IMAGE = $$(call APP_IMAGE_TEMPLATE,$(1),$(2))
 container-$(1)-$(2): context-$(1)-$(2)
@@ -192,13 +203,13 @@ container-$(1)-$(2): context-$(1)-$(2)
 		--build-arg BUILD_DATE=$$(shell date -u +"%Y-%m-%dT%H:%M:%SZ") \
 		--build-arg VCS_URL=$$(GIT_URL) \
 		--build-arg VCS_REF=$$(GIT_REVISION) \
-		--build-arg IMAGE_VERSION=$$(VERSION) \
+		--build-arg IMAGE_VERSION=$$(FULL_VERSION) \
 		--build-arg SCHEMA_USAGE=$$(SCHEMA_USAGE) \
 		--build-arg SCHEMA_URL=$$(SCHEMA_URL) \
 		-t $$(APP_IMAGE):latest \
-		-t $$(APP_IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION) \
+		-t $$(APP_IMAGE):$$(FULL_VERSION) \
 		$$(BUILD)/$(1)/app-image/$(2)
-	$$(DOCKER) images -q $$(APP_IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION)
+	$$(DOCKER) images -q $$(APP_IMAGE):$$(FULL_VERSION)
 
 context-$(1)-$(2): $$(BUILD)/$(1)/app-image/$(2)/Dockerfile
 	@echo "Image files aggregated at $$@"
@@ -206,7 +217,7 @@ context-$(1)-$(2): $$(BUILD)/$(1)/app-image/$(2)/Dockerfile
 $$(BUILD)/$(1)/app-image/$(2): ; mkdir -p $$@
 
 $$(BUILD)/$(1)/app-image/$(2)/Dockerfile: IMAGE = $$(call IMAGE_TEMPLATE,$(1))
-$$(BUILD)/$(1)/app-image/$(2)/Dockerfile: APP_BASEIMAGE = $$(IMAGE):$$(VERSION)-upstream-$$(UPSTREAM_VERSION)
+$$(BUILD)/$(1)/app-image/$(2)/Dockerfile: APP_BASEIMAGE = $$(IMAGE):$$(FULL_VERSION)
 $$(BUILD)/$(1)/app-image/$(2)/Dockerfile: app-image/Dockerfile.in | $$(BUILD)/$(1)/app-image/$(2)
 	sed \
 		-e 's/ARG_BASEIMAGE/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$$(APP_BASEIMAGE)))))/g' \

@@ -9,7 +9,7 @@ WORK IN PROGRESS - DON'T USE
 This project generates a docker image for the architectures (amd64, i386, armel, rpi, armhf) and two variants (base-image and app-image).
 
 The base-image is built with the SoftEther's vpnserver, vpnbridge and vpnclient binaries. 
-The especific binary to be run is especified through an run script first argument [see images below].
+The especific binary to be run is especified through an run script first argument [see images and examples below].
 
 The app-image extends base-image to simplify that necessity - app-image can use ''docker start'', while base-image must use ''docker run''.
 
@@ -26,15 +26,16 @@ See https://wiki.debian.org/RaspberryPi
 ## Docker
 
 The images are available on my Docker Hub page https://hub.docker.com/r/dquintela/
+They can be use like ''docker pull dquintela/<image name>'' or ''docker run dquintela/<image name>''
 
 | image \ arch | amd64 | i386 | armel | rpi | armhf | aarch64 |
 |---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| base-image | dquintela/softether-amd64 | dquintela/softether-i386 | dquintela/softether-armel | dquintela/softether-rpi | dquintela/softether-armhf | dquintela/softether-aarch64 |
-| vpnserver | dquintela/softether-vpnserver-amd64 | dquintela/softether-vpnserver-i386 | dquintela/softether-vpnserver-armel | dquintela/softether-vpnserver-rpi | dquintela/softether-vpnserver-armhf | dquintela/softether-vpnserver-aarch64 |
-| vpnbridge | dquintela/softether-vpnbridge-amd64 | dquintela/softether-vpnbridge-i386 | dquintela/softether-vpnbridge-armel | dquintela/softether-vpnbridge-rpi | dquintela/softether-vpnbridge-armhf | dquintela/softether-vpnbridge-aarch64 |
-| vpnclient | dquintela/softether-vpnclient-amd64 | dquintela/softether-vpnclient-i386 | dquintela/softether-vpnclient-armel | dquintela/softether-vpnclient-rpi | dquintela/softether-vpnclient-armhf | dquintela/softether-vpnclient-aarch64 |
+| base-image | softether-amd64 | softether-i386 | softether-armel | softether-rpi | softether-armhf | softether-aarch64 |
+| vpnserver | softether-vpnserver-amd64 | softether-vpnserver-i386 | softether-vpnserver-armel | softether-vpnserver-rpi | softether-vpnserver-armhf | softether-vpnserver-aarch64 |
+| vpnbridge | softether-vpnbridge-amd64 | softether-vpnbridge-i386 | softether-vpnbridge-armel | softether-vpnbridge-rpi | softether-vpnbridge-armhf | softether-vpnbridge-aarch64 |
+| vpnclient | softether-vpnclient-amd64 | softether-vpnclient-i386 | softether-vpnclient-armel | softether-vpnclient-rpi | softether-vpnclient-armhf | softether-vpnclient-aarch64 |
 
-This are the badge statitics for those images.
+These are the badge statitics for those images.
 
 | Image | Image Size | Image Version | Docker Pulls |
 |------:|:-----------:|:----------:|:-------------:|

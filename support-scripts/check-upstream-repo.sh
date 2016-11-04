@@ -31,3 +31,5 @@ else
 	echo "DIFFER"
 	echo $CURRENT > $STATUS_FILE
 fi
+
+# https://docs.travis-ci.com/user/triggering-builds
