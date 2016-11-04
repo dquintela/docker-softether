@@ -25,8 +25,7 @@ See https://wiki.debian.org/RaspberryPi
 
 ## Docker
 
-The images are available on my Docker Hub page https://hub.docker.com/r/dquintela/
-They can be use like ''docker pull dquintela/<image name>'' or ''docker run dquintela/<image name>''
+The images are available on my Docker Hub page https://hub.docker.com/r/dquintela/ and can be used like ''docker pull dquintela/{{image name}}'' or ''docker run dquintela/{{image name}}''
 
 | image \ arch | amd64 | i386 | armel | rpi | armhf | aarch64 |
 |---:|:---:|:---:|:---:|:---:|:---:|:---:|
