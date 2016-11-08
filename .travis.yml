@@ -26,6 +26,9 @@ script:
   - uname -a
   - docker --version
   - make -version
+  # Pull layers docker build (to enable docker build caching - especially usable for daily builds)
+  - make pull-$ARCH pull-$ARCH-vpnserver pull-$ARCH-vpnbridge pull-$ARCH-vpnclient
+  # The build
   - make container-$ARCH container-$ARCH-vpnserver container-$ARCH-vpnbridge container-$ARCH-vpnclient
 after_failure:
   # show memory usage again
