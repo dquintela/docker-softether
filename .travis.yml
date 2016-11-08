@@ -41,7 +41,7 @@ script:
   - docker history -q dquintela/softether-vpnserver-$ARCH:latest >> $ARCH-history_cache
   - docker history -q dquintela/softether-vpnbridge-$ARCH:latest >> $ARCH-history_cache
   - docker history -q dquintela/softether-vpnclient-$ARCH:latest >> $ARCH-history_cache
-  - docker save $( ( grep -v "<missing>" $ARCH-history_cache | tac ) | gzip -1 > docker-cache/$ARCH-cache.tar.gz
+  - docker save $( grep -v "<missing>" $ARCH-history_cache | tac ) | gzip -1 > docker-cache/$ARCH-cache.tar.gz
   - ls -la docker-cache/
 after_failure:
   # show memory usage again
