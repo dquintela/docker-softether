@@ -135,13 +135,6 @@ push-$(1): docker-login
 	$$(DOCKER) push $$(IMAGE):$$(FULL_VERSION)
 	@echo "pushed: $$(IMAGE):$$(FULL_VERSION)"
 
-pull-$(1): IMAGE = $$(call IMAGE_TEMPLATE,$(1))
-pull-$(1):
-	@echo "pulling: $$(IMAGE):latest"
-	$$(DOCKER) pull $$(IMAGE):latest || true
-	@echo "pulling: $$(IMAGE):$$(FULL_VERSION)"
-	$$(DOCKER) pull $$(IMAGE):$$(FULL_VERSION) || true
-
 container-$(1): IMAGE = $$(call IMAGE_TEMPLATE,$(1))
 container-$(1): CPU_BITS = $$(call CPU_BITS_TEMPLATE,$(1))
 container-$(1): context-$(1)
@@ -202,13 +195,6 @@ push-$(1)-$(2): docker-login
 	@echo "pushed: $$(APP_IMAGE):latest"
 	$$(DOCKER) push $$(APP_IMAGE):$$(FULL_VERSION)
 	@echo "pushed: $$(APP_IMAGE):$$(FULL_VERSION)"
-
-pull-$(1)-$(2): APP_IMAGE = $$(call APP_IMAGE_TEMPLATE,$(1),$(2))
-pull-$(1)-$(2):
-	@echo "pulling: $$(APP_IMAGE):latest"
-	$$(DOCKER) pull $$(APP_IMAGE):latest || true
-	@echo "pulling: $$(APP_IMAGE):$$(FULL_VERSION)"
-	$$(DOCKER) pull $$(APP_IMAGE):$$(FULL_VERSION) || true
 
 container-$(1)-$(2): APP_IMAGE = $$(call APP_IMAGE_TEMPLATE,$(1),$(2))
 container-$(1)-$(2): context-$(1)-$(2)

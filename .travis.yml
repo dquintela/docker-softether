@@ -22,14 +22,27 @@ env:
   - ARCH=rpi
   - ARCH=armhf
   - ARCH=aarch64
+cache:
+  directories:
+    - docker-cache
 script:
   - uname -a
   - docker --version
   - make -version
-  # Pull layers docker build (to enable docker build caching - especially usable for daily builds)
-  - make pull-$ARCH pull-$ARCH-vpnserver pull-$ARCH-vpnbridge pull-$ARCH-vpnclient
+  # Load image cache (to enable docker build cache - avoid duplicate image generation and upload - especially usefull for daily builds)
+  - ls -la docker-cache/
+  - if [ -e docker-cache/$ARCH-cache.tar.gz ]; then
+      docker load -i docker-cache/$ARCH-cache.tar.gz;
+    fi
   # The build
   - make container-$ARCH container-$ARCH-vpnserver container-$ARCH-vpnbridge container-$ARCH-vpnclient
+  # Generate cache for next time
+  - docker history -q dquintela/softether-$ARCH:latest            > $ARCH-history_cache
+  - docker history -q dquintela/softether-vpnserver-$ARCH:latest >> $ARCH-history_cache
+  - docker history -q dquintela/softether-vpnbridge-$ARCH:latest >> $ARCH-history_cache
+  - docker history -q dquintela/softether-vpnclient-$ARCH:latest >> $ARCH-history_cache
+  - docker save $( ( grep -v "<missing>" $ARCH-history_cache | tac ) | gzip -1 > docker-cache/$ARCH-cache.tar.gz
+  - ls -la docker-cache/
 after_failure:
   # show memory usage again
   - sudo free -m -t
