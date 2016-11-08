@@ -17,8 +17,7 @@ ARG UPSTREAM_VERSION
 ARG SOFTETHER_CPU=32bit
 ARG DEBIAN_FRONTEND=noninteractive
 
-LABEL org.label-schema.build-date="${BUILD_DATE}" \
-      org.label-schema.name="softether-ARG_ARCH" \
+LABEL org.label-schema.name="softether-ARG_ARCH" \
       org.label-schema.description="SoftEther VPN Server / Client / Bridge built from source for ARG_ARCH" \
       org.label-schema.usage="${SCHEMA_USAGE}" \
       org.label-schema.url="${SCHEMA_URL}" \

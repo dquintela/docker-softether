@@ -1,4 +1,4 @@
-# This version-strategy uses git tags to set the version string
+# # This version-strategy uses git tags to set the version string
 # This approach doesn't work on travis git version
 # GIT_URL          := $(shell git remote get-url origin)
 GIT_URL          := $(shell git config --get remote.origin.url)
@@ -147,7 +147,6 @@ container-$(1): CPU_BITS = $$(call CPU_BITS_TEMPLATE,$(1))
 container-$(1): context-$(1)
 	$$(DOCKER) build \
 		--pull \
-		--build-arg BUILD_DATE=$$(shell date -u +"%Y-%m-%dT%H:%M:%SZ") \
 		--build-arg VCS_URL=$$(GIT_URL) \
 		--build-arg VCS_REF=$$(GIT_REVISION) \
 		--build-arg IMAGE_VERSION=$$(FULL_VERSION) \
@@ -214,7 +213,6 @@ pull-$(1)-$(2):
 container-$(1)-$(2): APP_IMAGE = $$(call APP_IMAGE_TEMPLATE,$(1),$(2))
 container-$(1)-$(2): context-$(1)-$(2)
 	$$(DOCKER) build \
-		--build-arg BUILD_DATE=$$(shell date -u +"%Y-%m-%dT%H:%M:%SZ") \
 		--build-arg VCS_URL=$$(GIT_URL) \
 		--build-arg VCS_REF=$$(GIT_REVISION) \
 		--build-arg IMAGE_VERSION=$$(FULL_VERSION) \

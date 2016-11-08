@@ -11,8 +11,7 @@ ARG VCS_URL
 ARG SCHEMA_USAGE
 ARG SCHEMA_URL
 
-LABEL org.label-schema.build-date="${BUILD_DATE}" \
-      org.label-schema.name="softether-ARG_APP-ARG_ARCH" \
+LABEL org.label-schema.name="softether-ARG_APP-ARG_ARCH" \
       org.label-schema.description="SoftEther VPN ARG_APP built from source for ARG_ARCH" \
       org.label-schema.usage="${SCHEMA_USAGE}" \
       org.label-schema.url="${SCHEMA_URL}" \
