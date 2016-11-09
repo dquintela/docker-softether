@@ -50,12 +50,12 @@ after_failure:
   - sudo free -m -t
   # show actions of the OOM killer
   - sudo dmesg
-deploy:
-  provider: script
-  skip_cleanup: true
-  script: make push-$ARCH push-$ARCH-vpnserver push-$ARCH-vpnbridge push-$ARCH-vpnclient
-  on:
-    branch: master
+#deploy:
+#  provider: script
+#  skip_cleanup: true
+#  script: make push-$ARCH push-$ARCH-vpnserver push-$ARCH-vpnbridge push-$ARCH-vpnclient
+#  on:
+#    branch: master
 branches:
   only:
     - master
