@@ -165,6 +165,7 @@ $$(BUILD)/$(1)/base-image/Dockerfile: BASEIMAGE = $$(call BASEIMAGE_TEMPLATE,$(1
 $$(BUILD)/$(1)/base-image/Dockerfile: base-image/Dockerfile.in | $$(BUILD)/$(1)/base-image
 	sed \
 		-e 's/{{ARG_BASEIMAGE}}/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$$(BASEIMAGE)))))/g' \
+		-e 's/{{ARG_UPSTREAM_VERSION}}/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$$(UPSTREAM_VERSION)))))/g' \
 		-e 's/{{ARG_ARCH}}/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$(1)))))/g' \
 		$$< > $$@
 
