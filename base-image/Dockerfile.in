@@ -7,7 +7,6 @@ MAINTAINER Diogo Quintela <dquintela@gmail.com>
 # ENV like, but does not persist on final image
 # Can be replaced by --build-arg on docker-build
 ARG BUILD_DIR=/tmp/SoftEtherVPN
-ARG BUILD_DATE
 ARG IMAGE_VERSION
 ARG VCS_REF
 ARG VCS_URL
@@ -17,20 +16,9 @@ ARG UPSTREAM_VERSION
 ARG SOFTETHER_CPU=32bit
 ARG DEBIAN_FRONTEND=noninteractive
 
-LABEL org.label-schema.name="softether-ARG_ARCH" \
-      org.label-schema.description="SoftEther VPN Server / Client / Bridge built from source for ARG_ARCH" \
-      org.label-schema.usage="${SCHEMA_USAGE}" \
-      org.label-schema.url="${SCHEMA_URL}" \
-      org.label-schema.vcs-ref="${VCS_REF}" \
-      org.label-schema.vcs-url="${VCS_URL}" \
-      org.label-schema.vendor="Diogo Quintela" \
-      org.label-schema.version="${IMAGE_VERSION:-v0.0.0}" \
-      org.label-schema.schema-version="1.0"
-
 # Persist on final image
 ENV SOFTETHER_BIN="/usr/local/bin" \
 	SOFTETHER_INSTALL="/usr/local/softether" \
-	SOFTETHER_IMAGE_VERSION="${IMAGE_VERSION:-v0.0.0}" \
 	SOFTETHER_UPSTREAM_VERSION="${UPSTREAM_VERSION:-master}"
 
 COPY host-qemu /
@@ -94,6 +82,19 @@ EXPOSE 443/tcp 992/tcp 1194/tcp 1194/udp 5555/tcp 500/udp 4500/udp
 
 # WORKDIR ${SOFTETHER_INSTALL}
 WORKDIR /docker-softether
+
+# Persist on final image
+ENV SOFTETHER_IMAGE_VERSION="${IMAGE_VERSION:-v0.0.0}"
+
+LABEL org.label-schema.name="softether-ARG_ARCH" \
+      org.label-schema.description="SoftEther VPN Server / Client / Bridge built from source for ARG_ARCH" \
+      org.label-schema.usage="${SCHEMA_USAGE}" \
+      org.label-schema.url="${SCHEMA_URL}" \
+      org.label-schema.vcs-ref="${VCS_REF}" \
+      org.label-schema.vcs-url="${VCS_URL}" \
+      org.label-schema.vendor="Diogo Quintela" \
+      org.label-schema.version="${IMAGE_VERSION:-v0.0.0}" \
+      org.label-schema.schema-version="1.0"
 
 ENTRYPOINT ["/docker-softether/run.sh"]
 CMD ["--help"]
