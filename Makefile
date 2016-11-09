@@ -3,14 +3,15 @@
 # GIT_URL          := $(shell git remote get-url origin)
 GIT_URL          := $(shell git config --get remote.origin.url)
 GIT_REVISION     := $(shell git rev-parse --short HEAD)
-VERSION          := $(shell git describe --tag --always --dirty)
+#VERSION          := $(shell git describe --tag --always --dirty)
+VERSION          := $(shell git describe --tag --always)
 UPSTREAM_VERSION := $(shell git ls-remote -h https://github.com/SoftEtherVPN/SoftEtherVPN.git master | cut -f 1 | cut -c1-7)
 FULL_VERSION     := $(VERSION)-upstream-$(UPSTREAM_VERSION)
 BUILD            := build
 ALL_ARCH         := amd64 i386 armel rpi armhf aarch64
 BASE_IMAGE_FILES := $(shell find base-image -type f -not -name 'Dockerfile*')
 BASE_IMAGE_DIRS  := $(shell find base-image -type d)
-QEMU_STATIC      := /usr/bin/qemu-arm-static /usr/bin/qemu-aarch64-static  /usr/bin/qemu-x86_64-static
+QEMU_STATIC      := /usr/bin/qemu-arm-static /usr/bin/qemu-aarch64-static /usr/bin/qemu-x86_64-static
 ALL_APPS         := vpnserver vpnbridge vpnclient
 SCHEMA_USAGE     := https://github.com/dquintela/docker-softether/blob/$(GIT_REVISION)/README.md
 SCHEMA_URL       := https://github.com/dquintela/docker-softether

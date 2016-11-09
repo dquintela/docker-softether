@@ -37,11 +37,12 @@ script:
   # The build
   - make container-$ARCH container-$ARCH-vpnserver container-$ARCH-vpnbridge container-$ARCH-vpnclient
   # Generate cache for next time
-  - docker history -q dquintela/softether-$ARCH:latest            > $ARCH-history_cache
-  - docker history -q dquintela/softether-vpnserver-$ARCH:latest >> $ARCH-history_cache
-  - docker history -q dquintela/softether-vpnbridge-$ARCH:latest >> $ARCH-history_cache
-  - docker history -q dquintela/softether-vpnclient-$ARCH:latest >> $ARCH-history_cache
-  - docker save $( grep -v "<missing>" $ARCH-history_cache | tac ) | gzip -1 > docker-cache/$ARCH-cache.tar.gz
+  - docker history -q dquintela/softether-$ARCH:latest           | tee    $ARCH-history_cache
+  - docker history -q dquintela/softether-vpnserver-$ARCH:latest | tee -a $ARCH-history_cache
+  - docker history -q dquintela/softether-vpnbridge-$ARCH:latest | tee -a $ARCH-history_cache
+  - docker history -q dquintela/softether-vpnclient-$ARCH:latest | tee -a $ARCH-history_cache
+  - cat $ARCH-history_cache | awk '!seen[$0]++' | grep -v "<missing>" | tee $ARCH-history_cache_processed
+  - docker save $( tac $ARCH-history_cache_processed ) | gzip -1 > docker-cache/$ARCH-cache.tar.gz
   - ls -la docker-cache/
 after_failure:
   # show memory usage again
