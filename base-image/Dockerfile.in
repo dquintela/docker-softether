@@ -37,7 +37,7 @@ COPY script /docker-softether/
 # Replace
 # git clone --verbose --depth=1 https://github.com/SoftEtherVPN/SoftEtherVPN.git /tmp/SoftEtherVPN \
 # && cd /tmp/SoftEtherVPN \
-# && git checkout ${SOFTETHER_UPSTREAM_VERSION} \
+# && git checkout {{ARG_UPSTREAM_VERSION}} \
 #
 # With (untar with striping of base directory)
 # mkdir /tmp/SoftEtherVPN \
@@ -66,29 +66,6 @@ INSTALL_VPNCMD_DIR=${SOFTETHER_INSTALL}/vpncmd/ \
 && rm -rf /tmp/SoftEtherVPN \
 && chmod +x /docker-softether/*.sh \
 && rm /usr/bin/qemu-*-static # MUST LAST LINE 
-
-
-#### RUN apt-get update
-#### RUN apt-get install -q -y --no-install-recommends ca-certificates libreadline6 libssl1.0.0 libncurses5 ethtool iptables
-#### RUN apt-get install -q -y --no-install-recommends build-essential curl libreadline6-dev libssl-dev libncurses5-dev
-#### RUN mkdir /tmp/SoftEtherVPN
-#### RUN cd /tmp/SoftEtherVPN
-#### RUN curl -L https://api.github.com/repos/SoftEtherVPN/SoftEtherVPN/tarball/${SOFTETHER_UPSTREAM_VERSION} | tar xz --strip=1
-#### RUN cp src/makefiles/linux_${SOFTETHER_CPU}.mak Makefile
-#### RUN make CC=gcc
-#### RUN make install \
-#### INSTALL_BINDIR=${SOFTETHER_BIN}/ \
-#### INSTALL_VPNSERVER_DIR=${SOFTETHER_INSTALL}/vpnserver/ \
-#### INSTALL_VPNBRIDGE_DIR=${SOFTETHER_INSTALL}/vpnbridge/ \
-#### INSTALL_VPNCLIENT_DIR=${SOFTETHER_INSTALL}/vpnclient/ \
-#### INSTALL_VPNCMD_DIR=${SOFTETHER_INSTALL}/vpncmd/
-#### RUN apt-get remove -y --auto-remove --purge build-essential curl libreadline6-dev libssl-dev libncurses5-dev
-#### RUN apt-get clean
-#### RUN rm -rf /var/lib/apt/lists/*
-#### RUN rm -rf /tmp/SoftEtherVPN
-#### RUN chmod +x /docker-softether/*.sh
-#### RUN rm /usr/bin/qemu-*-static # MUST LAST LINE 
-
 
 # https://docs.docker.com/engine/reference/builder/#label#stopsignal
 # STOPSIGNAL signal
