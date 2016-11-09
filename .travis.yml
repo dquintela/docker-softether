@@ -18,10 +18,10 @@ before_install:
 env:
   - ARCH=amd64
   - ARCH=i386
-  - ARCH=armel
-  - ARCH=rpi
-  - ARCH=armhf
-  - ARCH=aarch64
+  #- ARCH=armel
+  #- ARCH=rpi
+  #- ARCH=armhf
+  #- ARCH=aarch64
 cache:
   directories:
     - docker-cache
@@ -33,14 +33,15 @@ script:
   - ls -la docker-cache/
   - if [ -e docker-cache/$ARCH-cache.tar.gz ]; then
       docker load -i docker-cache/$ARCH-cache.tar.gz;
+      rm docker-cache/$ARCH-cache.tar.gz;
     fi
   # The build
   - make container-$ARCH container-$ARCH-vpnserver container-$ARCH-vpnbridge container-$ARCH-vpnclient
   # Generate cache for next time
-  - docker history -q dquintela/softether-$ARCH:latest           | tee    $ARCH-history_cache
-  - docker history -q dquintela/softether-vpnserver-$ARCH:latest | tee -a $ARCH-history_cache
-  - docker history -q dquintela/softether-vpnbridge-$ARCH:latest | tee -a $ARCH-history_cache
-  - docker history -q dquintela/softether-vpnclient-$ARCH:latest | tee -a $ARCH-history_cache
+  - docker history -q dquintela/softether-$ARCH:latest           >  $ARCH-history_cache
+  - docker history -q dquintela/softether-vpnserver-$ARCH:latest >> $ARCH-history_cache
+  - docker history -q dquintela/softether-vpnbridge-$ARCH:latest >> $ARCH-history_cache
+  - docker history -q dquintela/softether-vpnclient-$ARCH:latest >> $ARCH-history_cache
   - cat $ARCH-history_cache | awk '!seen[$0]++' | grep -v "<missing>" | tee $ARCH-history_cache_processed
   - docker save $( tac $ARCH-history_cache_processed ) | gzip -1 > docker-cache/$ARCH-cache.tar.gz
   - ls -la docker-cache/

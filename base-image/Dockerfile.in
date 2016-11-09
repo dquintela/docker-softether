@@ -1,7 +1,7 @@
 #
-# SoftEther VPN Server / Client / Bridge built from source for ARG_ARCH
+# SoftEther VPN Server / Client / Bridge built from source for {{ARG_ARCH}}
 #
-FROM ARG_BASEIMAGE
+FROM {{ARG_BASEIMAGE}}
 MAINTAINER Diogo Quintela <dquintela@gmail.com>
 
 # ENV like, but does not persist on final image
@@ -19,7 +19,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Persist on final image
 ENV SOFTETHER_BIN="/usr/local/bin" \
 	SOFTETHER_INSTALL="/usr/local/softether" \
-	SOFTETHER_UPSTREAM_VERSION="${UPSTREAM_VERSION:-master}"
+	SOFTETHER_UPSTREAM_VERSION="${UPSTREAM_VERSION}"
 
 COPY host-qemu /
 COPY script /docker-softether/
@@ -84,16 +84,16 @@ EXPOSE 443/tcp 992/tcp 1194/tcp 1194/udp 5555/tcp 500/udp 4500/udp
 WORKDIR /docker-softether
 
 # Persist on final image
-ENV SOFTETHER_IMAGE_VERSION="${IMAGE_VERSION:-v0.0.0}"
+ENV SOFTETHER_IMAGE_VERSION="${IMAGE_VERSION}"
 
-LABEL org.label-schema.name="softether-ARG_ARCH" \
-      org.label-schema.description="SoftEther VPN Server / Client / Bridge built from source for ARG_ARCH" \
+LABEL org.label-schema.name="softether-{{ARG_ARCH}}" \
+      org.label-schema.description="SoftEther VPN Server / Client / Bridge built from source for {{ARG_ARCH}}" \
       org.label-schema.usage="${SCHEMA_USAGE}" \
       org.label-schema.url="${SCHEMA_URL}" \
       org.label-schema.vcs-ref="${VCS_REF}" \
       org.label-schema.vcs-url="${VCS_URL}" \
       org.label-schema.vendor="Diogo Quintela" \
-      org.label-schema.version="${IMAGE_VERSION:-v0.0.0}" \
+      org.label-schema.version="${IMAGE_VERSION}" \
       org.label-schema.schema-version="1.0"
 
 ENTRYPOINT ["/docker-softether/run.sh"]

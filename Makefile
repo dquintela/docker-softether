@@ -164,8 +164,8 @@ $$(foreach dir,$$(BASE_IMAGE_DIRS),$$(BUILD)/$(1)/$$(dir)): ; mkdir -p $$@
 $$(BUILD)/$(1)/base-image/Dockerfile: BASEIMAGE = $$(call BASEIMAGE_TEMPLATE,$(1))
 $$(BUILD)/$(1)/base-image/Dockerfile: base-image/Dockerfile.in | $$(BUILD)/$(1)/base-image
 	sed \
-		-e 's/ARG_BASEIMAGE/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$$(BASEIMAGE)))))/g' \
-		-e 's/ARG_ARCH/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$(1)))))/g' \
+		-e 's/{{ARG_BASEIMAGE}}/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$$(BASEIMAGE)))))/g' \
+		-e 's/{{ARG_ARCH}}/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$(1)))))/g' \
 		$$< > $$@
 
 .SECONDEXPANSION:
@@ -219,9 +219,9 @@ $$(BUILD)/$(1)/app-image/$(2)/Dockerfile: IMAGE = $$(call IMAGE_TEMPLATE,$(1))
 $$(BUILD)/$(1)/app-image/$(2)/Dockerfile: APP_BASEIMAGE = $$(IMAGE):$$(FULL_VERSION)
 $$(BUILD)/$(1)/app-image/$(2)/Dockerfile: app-image/Dockerfile.in | $$(BUILD)/$(1)/app-image/$(2)
 	sed \
-		-e 's/ARG_BASEIMAGE/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$$(APP_BASEIMAGE)))))/g' \
-		-e 's/ARG_ARCH/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$(1)))))/g' \
-		-e 's/ARG_APP/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$(2)))))/g' \
+		-e 's/{{ARG_BASEIMAGE}}/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$$(APP_BASEIMAGE)))))/g' \
+		-e 's/{{ARG_ARCH}}/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$(1)))))/g' \
+		-e 's/{{ARG_APP}}/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$(2)))))/g' \
 		$$< > $$@
 
 endef
