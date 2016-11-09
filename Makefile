@@ -144,7 +144,6 @@ container-$(1): context-$(1)
 		--build-arg VCS_URL=$$(GIT_URL) \
 		--build-arg VCS_REF=$$(GIT_REVISION) \
 		--build-arg IMAGE_VERSION=$$(FULL_VERSION) \
-		--build-arg UPSTREAM_VERSION=$$(UPSTREAM_VERSION) \
 		--build-arg SOFTETHER_CPU=$$(CPU_BITS) \
 		--build-arg SCHEMA_USAGE=$$(SCHEMA_USAGE) \
 		--build-arg SCHEMA_URL=$$(SCHEMA_URL) \
