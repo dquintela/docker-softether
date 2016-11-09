@@ -3,8 +3,8 @@
 # GIT_URL          := $(shell git remote get-url origin)
 GIT_URL          := $(shell git config --get remote.origin.url)
 GIT_REVISION     := $(shell git rev-parse --short HEAD)
-#VERSION          := $(shell git describe --tag --always --dirty)
-VERSION          := $(shell git describe --tag --always)
+VERSION          := $(shell git describe --tag --always --dirty)
+#VERSION          := $(shell git describe --tag --always)
 UPSTREAM_VERSION := $(shell git ls-remote -h https://github.com/SoftEtherVPN/SoftEtherVPN.git master | cut -f 1 | cut -c1-7)
 FULL_VERSION     := $(VERSION)-upstream-$(UPSTREAM_VERSION)
 BUILD            := build
