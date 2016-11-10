@@ -4,11 +4,11 @@
 FROM {{ARG_BASEIMAGE}}
 MAINTAINER Diogo Quintela <dquintela@gmail.com>
 
-ARG IMAGE_VERSION
-ARG VCS_REF
-ARG VCS_URL
-ARG SCHEMA_USAGE
-ARG SCHEMA_URL
+ARG IMAGE_VERSION=0.0.0
+ARG VCS_REF=HEAD
+ARG VCS_URL=https://github.com/dquintela/docker-softether.git
+ARG SCHEMA_USAGE=https://github.com/dquintela/docker-softether/blob/master/README.md
+ARG SCHEMA_URL=https://github.com/dquintela/docker-softether
 
 LABEL org.label-schema.name="softether-{{ARG_APP}}-{{ARG_ARCH}}" \
       org.label-schema.description="SoftEther VPN {{ARG_APP}} built from source for {{ARG_ARCH}}" \
