@@ -1,0 +1,12 @@
+# Apt-Installation Helper (to calculate expected installed packages)
+#
+FROM {{ARG_BASEIMAGE}}
+MAINTAINER Diogo Quintela <dquintela@gmail.com>
+
+COPY host-qemu /
+
+# The package list must be the same in Dockerfile.in
+CMD apt-get update -qq \
+&& apt-get install --dry-run -qq -y --no-install-recommends \
+ ca-certificates libreadline6 libssl1.0.0 libncurses5 ethtool iptables \
+ build-essential curl libreadline6-dev libssl-dev libncurses5-dev

@@ -136,11 +136,23 @@ push-$(1): docker-login
 	$$(DOCKER) push $$(IMAGE):$$(FULL_VERSION)
 	@echo "pushed: $$(IMAGE):$$(FULL_VERSION)"
 
+container-$(1): BASEIMAGE = $$(call BASEIMAGE_TEMPLATE,$(1))
 container-$(1): IMAGE = $$(call IMAGE_TEMPLATE,$(1))
 container-$(1): CPU_BITS = $$(call CPU_BITS_TEMPLATE,$(1))
 container-$(1): context-$(1)
+	@echo "Pulling $$(BASEIMAGE) as it is the base for $$(IMAGE) and $$(IMAGE)-build (avoid docker build --pull)"
+	$$(DOCKER) pull $$(BASEIMAGE)
+	@echo "Building $$(IMAGE)-build"
 	$$(DOCKER) build \
-		--pull \
+		-t $$(IMAGE)-build:latest \
+		-f $$(BUILD)/$(1)/base-image/Dockerfile-helper \
+		$$(BUILD)/$(1)/base-image
+	@#echo "Running $$(IMAGE)-build to find expected installed apt packages"
+	@#echo "$$$$($$(DOCKER) run --rm $$(IMAGE)-build:latest)" 
+	@#echo "$$$$($$(DOCKER) run --rm $$(IMAGE)-build:latest | sha256sum | cut -d ' ' -f 1)" 
+	@echo "Building $$(IMAGE)"
+	$$(DOCKER) build \
+		--build-arg BUILD_CACHE_TOKEN=$$$$($$(DOCKER) run --rm $$(IMAGE)-build:latest | sha256sum | cut -d ' ' -f 1) \
 		--build-arg VCS_URL=$$(GIT_URL) \
 		--build-arg VCS_REF=$$(GIT_REVISION) \
 		--build-arg IMAGE_VERSION=$$(FULL_VERSION) \
@@ -153,8 +165,9 @@ container-$(1): context-$(1)
 	$$(DOCKER) images -q $$(IMAGE):$$(FULL_VERSION)
 
 context-$(1): $$(BUILD)/$(1)/base-image/Dockerfile \
-		   $$(addprefix $$(BUILD)/$(1)/, $$(BASE_IMAGE_FILES)) \
-		   $$(addprefix $$(BUILD)/$(1)/base-image/host-qemu, $$(QEMU_STATIC))
+			  $$(BUILD)/$(1)/base-image/Dockerfile-helper \
+		      $$(addprefix $$(BUILD)/$(1)/, $$(BASE_IMAGE_FILES)) \
+		      $$(addprefix $$(BUILD)/$(1)/base-image/host-qemu, $$(QEMU_STATIC))
 	@echo "Image files aggregated at $$@"
 
 $$(BUILD)/$(1)/base-image/host-qemu/usr/bin: ; mkdir -p $$@
@@ -166,6 +179,12 @@ $$(BUILD)/$(1)/base-image/Dockerfile: base-image/Dockerfile.in | $$(BUILD)/$(1)/
 		-e 's/{{ARG_BASEIMAGE}}/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$$(BASEIMAGE)))))/g' \
 		-e 's/{{ARG_UPSTREAM_VERSION}}/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$$(UPSTREAM_VERSION)))))/g' \
 		-e 's/{{ARG_ARCH}}/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$(1)))))/g' \
+		$$< > $$@
+
+$$(BUILD)/$(1)/base-image/Dockerfile-helper: BASEIMAGE = $$(call BASEIMAGE_TEMPLATE,$(1))
+$$(BUILD)/$(1)/base-image/Dockerfile-helper: base-image/Dockerfile-helper.in | $$(BUILD)/$(1)/base-image
+	sed \
+		-e 's/{{ARG_BASEIMAGE}}/$$(subst ',\',$$(subst /,\/,$$(subst &,\&,$$(subst \,\\,$$(BASEIMAGE)))))/g' \
 		$$< > $$@
 
 .SECONDEXPANSION:

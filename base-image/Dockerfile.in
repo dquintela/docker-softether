@@ -6,6 +6,7 @@ MAINTAINER Diogo Quintela <dquintela@gmail.com>
 
 # ENV like, but does not persist on final image
 # Can be replaced by --build-arg on docker-build
+ARG BUILD_CACHE_TOKEN
 ARG IMAGE_VERSION
 ARG VCS_REF
 ARG VCS_URL
@@ -45,9 +46,10 @@ COPY script /docker-softether/
 # --------------------------------------------------------------------------------------
 
 RUN set -xe \
-&& apt-get update \
-&& apt-get install -q -y --no-install-recommends ca-certificates libreadline6 libssl1.0.0 libncurses5 ethtool iptables \
-&& apt-get install -q -y --no-install-recommends build-essential curl libreadline6-dev libssl-dev libncurses5-dev \
+&& echo "Cache token is ${BUILD_CACHE_TOKEN}" \
+&& apt-get update -q \
+&& apt-get install -qq -y --no-install-recommends ca-certificates libreadline6 libssl1.0.0 libncurses5 ethtool iptables \
+&& apt-get install -qq -y --no-install-recommends build-essential curl libreadline6-dev libssl-dev libncurses5-dev \
 && mkdir /tmp/SoftEtherVPN \
 && cd /tmp/SoftEtherVPN \
 && curl -L https://api.github.com/repos/SoftEtherVPN/SoftEtherVPN/tarball/{{ARG_UPSTREAM_VERSION}} | tar xz --strip=1 \
