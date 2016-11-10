@@ -6,12 +6,7 @@ MAINTAINER Diogo Quintela <dquintela@gmail.com>
 
 # ENV like, but does not persist on final image
 # Can be replaced by --build-arg on docker-build
-ARG BUILD_CACHE_TOKEN
-ARG IMAGE_VERSION
-ARG VCS_REF
-ARG VCS_URL
-ARG SCHEMA_USAGE
-ARG SCHEMA_URL
+ARG BUILD_CACHE_TOKEN=dummy
 ARG SOFTETHER_CPU=32bit
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -46,7 +41,7 @@ COPY script /docker-softether/
 # --------------------------------------------------------------------------------------
 
 RUN set -xe \
-&& echo "Cache token is ${BUILD_CACHE_TOKEN}" \
+&& echo Cache token is ${BUILD_CACHE_TOKEN} \
 && apt-get update -q \
 && apt-get install -qq -y --no-install-recommends ca-certificates libreadline6 libssl1.0.0 libncurses5 ethtool iptables \
 && apt-get install -qq -y --no-install-recommends build-essential curl libreadline6-dev libssl-dev libncurses5-dev \
@@ -83,6 +78,14 @@ EXPOSE 443/tcp 992/tcp 1194/tcp 1194/udp 5555/tcp 500/udp 4500/udp
 
 # WORKDIR ${SOFTETHER_INSTALL}
 WORKDIR /docker-softether
+
+# ENV like, but does not persist on final image
+# Can be replaced by --build-arg on docker-build
+ARG IMAGE_VERSION=0.0.0
+ARG VCS_REF=HEAD
+ARG VCS_URL=https://github.com/dquintela/docker-softether.git
+ARG SCHEMA_USAGE=https://github.com/dquintela/docker-softether/blob/master/README.md
+ARG SCHEMA_URL=https://github.com/dquintela/docker-softether
 
 # Persist on final image
 ENV SOFTETHER_IMAGE_VERSION="${IMAGE_VERSION}"
