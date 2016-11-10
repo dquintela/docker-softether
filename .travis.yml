@@ -39,6 +39,7 @@ script:
   - make container-$ARCH container-$ARCH-vpnserver container-$ARCH-vpnbridge container-$ARCH-vpnclient
   # Generate cache for next time
   - docker history -q dquintela/softether-$ARCH:latest           >  $ARCH-history_cache
+  - docker history -q dquintela/softether-$ARCH-build:latest     >> $ARCH-history_cache
   - docker history -q dquintela/softether-vpnserver-$ARCH:latest >> $ARCH-history_cache
   - docker history -q dquintela/softether-vpnbridge-$ARCH:latest >> $ARCH-history_cache
   - docker history -q dquintela/softether-vpnclient-$ARCH:latest >> $ARCH-history_cache
