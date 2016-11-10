@@ -76,7 +76,6 @@ VOLUME /var/log/softether
 # 5555 for SoftEtherVPN
 EXPOSE 443/tcp 992/tcp 1194/tcp 1194/udp 5555/tcp 500/udp 4500/udp
 
-# WORKDIR ${SOFTETHER_INSTALL}
 WORKDIR /docker-softether
 
 # ENV like, but does not persist on final image
