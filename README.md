@@ -1,4 +1,8 @@
-# Dockerized SoftEther VPN Server / Client / Bridge [![GitHub tag](https://img.shields.io/github/tag/dquintela/docker-softether.svg)]() [![GitHub issues](https://img.shields.io/github/issues/dquintela/docker-softether.svg)](https://github.com/dquintela/docker-softether/issues) [![license](https://img.shields.io/github/license/dquintela/docker-softether.svg)](https://github.com/dquintela/docker-softether/blob/master/LICENSE) [![Build Status](https://img.shields.io/travis/dquintela/docker-softether.svg)](https://travis-ci.org/dquintela/docker-softether)
+# Dockerized SoftEther VPN Server / Client / Bridge 
+[![GitHub tag](https://img.shields.io/github/tag/dquintela/docker-softether.svg)]() 
+[![GitHub issues](https://img.shields.io/github/issues/dquintela/docker-softether.svg)](https://github.com/dquintela/docker-softether/issues) 
+[![license](https://img.shields.io/github/license/dquintela/docker-softether.svg)](https://github.com/dquintela/docker-softether/blob/master/LICENSE) 
+[![Build Status](https://img.shields.io/travis/dquintela/docker-softether.svg)](https://travis-ci.org/dquintela/docker-softether)
 
 WORK IN PROGRESS - DON'T USE
 
@@ -11,7 +15,7 @@ The app-image extends base-image to simplify that necessity - app-image can use 
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [Supported archs:](#supported-archs)
 - [Docker](#docker)
