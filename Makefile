@@ -23,7 +23,7 @@ SCHEMA_URL       := https://github.com/dquintela/docker-softether
 		   $(foreach arch,$(ALL_ARCH),$(foreach app,$(ALL_APPS),$(BUILD)/$(arch)/app-image/$(app))) \
 		   $(foreach arch,$(ALL_ARCH),$(foreach app,$(ALL_APPS),$(BUILD)/$(arch)/app-image/$(app)/Dockerfile))		   
 
-.PHONY:    all all-context all-container all-push clean $(BUILD)/markdown.md
+.PHONY:    all all-context all-container all-push clean $(BUILD)/markdown.md toc
 
 all: all-container
 
@@ -66,6 +66,9 @@ CPU_BITS_TEMPLATE    = $(CPU_BITS_$(1))
 #BASEIMAGE 		     = $(BASEIMAGE_$(*))
 BASEIMAGE_TEMPLATE   = $(BASEIMAGE_$(1))
 DOCKER               = docker
+
+toc:
+	@$(DOCKER) run --rm -v $(shell pwd):/src i386/node:6.9.0-slim /bin/bash -c "npm install -g doctoc && doctoc /src/README.md"
 
 markdown: $(BUILD)/markdown.md
 
